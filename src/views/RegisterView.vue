@@ -35,6 +35,28 @@
             </p>
           </div>
 
+          <!-- メールアドレス -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">
+              メールアドレス
+            </label>
+            <div class="mt-1">
+              <input
+                id="email"
+                v-model="form.email"
+                name="email"
+                type="email"
+                required
+                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="メールアドレスを入力"
+                :disabled="isLoading"
+              />
+            </div>
+            <p v-if="errors.email" class="mt-1 text-sm text-red-600">
+              {{ errors.email }}
+            </p>
+          </div>
+
           <!-- パスワード -->
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700">
@@ -214,6 +236,7 @@ const authStore = useAuthStore()
 // フォームデータ
 const form = ref({
   username: '',
+  email: '',
   password: '',
   confirmPassword: '',
   agreeTerms: false
@@ -229,6 +252,7 @@ const showSuccessMessage = ref(false)
 // バリデーションエラー
 const errors = ref({
   username: '',
+  email: '',
   password: '',
   confirmPassword: ''
 })
@@ -237,6 +261,7 @@ const errors = ref({
 const isFormValid = computed(() => {
   return (
     form.value.username.trim() !== '' &&
+    form.value.email.trim() !== '' &&
     form.value.password.length >= 6 &&
     form.value.password === form.value.confirmPassword &&
     form.value.agreeTerms
@@ -247,6 +272,7 @@ const isFormValid = computed(() => {
 const validateForm = () => {
   errors.value = {
     username: '',
+    email: '',
     password: '',
     confirmPassword: ''
   }
@@ -262,6 +288,15 @@ const validateForm = () => {
     isValid = false
   } else if (form.value.username.length > 20) {
     errors.value.username = 'ユーザー名は20文字以下で入力してください'
+    isValid = false
+  }
+
+  // メールアドレスのバリデーション
+  if (!form.value.email.trim()) {
+    errors.value.email = 'メールアドレスを入力してください'
+    isValid = false
+  } else if (!form.value.email.includes('@') || !form.value.email.includes('.')) {
+    errors.value.email = '有効なメールアドレスを入力してください'
     isValid = false
   }
 
@@ -296,12 +331,9 @@ const handleRegister = async () => {
     isLoading.value = true
     errorMessage.value = ''
 
-    // メールアドレスを生成（ユーザー名@diet-app.local）
-    const email = `${form.value.username}@diet-app.local`
-
     const result = await authStore.register({
       username: form.value.username,
-      email: email,
+      email: form.value.email,
       password: form.value.password,
       nickname: form.value.username
     })

@@ -15,18 +15,18 @@
         <h2 class="text-2xl font-bold text-center mb-6">ログイン</h2>
         
         <form @submit.prevent="handleLogin" class="space-y-4">
-          <!-- ユーザー名 -->
+          <!-- メールアドレス -->
           <div>
-            <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-              ユーザー名
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+              メールアドレス
             </label>
             <input
-              id="username"
-              v-model="form.username"
-              type="text"
+              id="email"
+              v-model="form.email"
+              type="email"
               required
               class="input-field"
-              placeholder="ユーザー名を入力"
+              placeholder="メールアドレスを入力"
               :disabled="loading"
             />
           </div>
@@ -114,13 +114,13 @@ const error = ref('')
 const showPassword = ref(false)
 
 const form = reactive({
-  username: '',
+  email: '',
   password: ''
 })
 
 const handleLogin = async () => {
-  if (!form.username || !form.password) {
-    error.value = 'ユーザー名とパスワードを入力してください'
+  if (!form.email || !form.password) {
+    error.value = 'メールアドレスとパスワードを入力してください'
     return
   }
 
@@ -129,7 +129,7 @@ const handleLogin = async () => {
 
   try {
     const result = await authStore.login({
-      username: form.username,
+      email: form.email,
       password: form.password
     })
 
@@ -153,7 +153,7 @@ const handleDemoLogin = async () => {
 
   try {
     const result = await authStore.login({
-      username: 'demo_user',
+      email: 'demo@example.com',
       password: 'demo123'
     })
 

@@ -11,14 +11,15 @@ export const firebaseConfig = {
   appId: "your-app-id"
 }
 
-// 開発環境用の設定例（実際の値に置き換えてください）
+// 開発環境用の設定（実際のFirebaseプロジェクト設定）
 export const devFirebaseConfig = {
-  apiKey: "AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  authDomain: "diet-assistant-dev.firebaseapp.com",
-  projectId: "diet-assistant-dev",
-  storageBucket: "diet-assistant-dev.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abcdefghijklmnop"
+  apiKey: "AIzaSyCpS0h7swBO6mTajrzt7GofLwXqfYiIlQY",
+  authDomain: "diet-app-a319a.firebaseapp.com",
+  projectId: "diet-app-a319a",
+  storageBucket: "diet-app-a319a.firebasestorage.app",
+  messagingSenderId: "214508094537",
+  appId: "1:214508094537:web:b8daa155ff28dcbcbeab98",
+  measurementId: "G-J0X466PFTG"
 }
 
 // 本番環境用の設定例（実際の値に置き換えてください）
