@@ -1,101 +1,108 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+// ビューコンポーネントのインポート
+import LoginView from '@/views/LoginView.vue'
+import HomeView from '@/views/HomeView.vue'
+import RecordsView from '@/views/RecordsView.vue'
+import WeightRecordView from '@/views/WeightRecordView.vue'
+import MealRecordView from '@/views/MealRecordView.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('@/views/HomeView.vue'),
-    meta: { title: 'ホーム' }
+    redirect: '/home'
   },
   {
     path: '/login',
-    name: 'Login',
-    component: () => import('@/views/LoginView.vue'),
-    meta: { title: 'ログイン' }
+    name: 'login',
+    component: LoginView,
+    meta: { requiresAuth: false }
   },
   {
-    path: '/register',
-    name: 'Register',
-    component: () => import('@/views/RegisterView.vue'),
-    meta: { title: 'ユーザー登録' }
+    path: '/home',
+    name: 'home',
+    component: HomeView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/records',
-    name: 'RecordSelection',
-    component: () => import('@/views/RecordSelectionView.vue'),
-    meta: { title: '記録' }
+    name: 'records',
+    component: RecordsView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/weight-record',
-    name: 'WeightRecord',
-    component: () => import('@/views/WeightRecordView.vue'),
-    meta: { title: '体重記録' }
+    name: 'weight-record',
+    component: WeightRecordView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/meal-record',
-    name: 'MealRecord',
-    component: () => import('@/views/MealRecordView.vue'),
-    meta: { title: '食事記録' }
+    name: 'meal-record',
+    component: MealRecordView,
+    meta: { requiresAuth: true }
   },
+  // プレースホルダールート（後で実装予定）
   {
     path: '/exercise-record',
-    name: 'ExerciseRecord',
+    name: 'exercise-record',
     component: () => import('@/views/ExerciseRecordView.vue'),
-    meta: { title: '運動記録' }
+    meta: { requiresAuth: true }
   },
   {
     path: '/exercise-menu',
-    name: 'ExerciseMenu',
+    name: 'exercise-menu',
     component: () => import('@/views/ExerciseMenuView.vue'),
-    meta: { title: '運動メニュー提案' }
+    meta: { requiresAuth: true }
   },
   {
     path: '/progress',
-    name: 'Progress',
+    name: 'progress',
     component: () => import('@/views/ProgressView.vue'),
-    meta: { title: '進捗詳細' }
+    meta: { requiresAuth: true }
   },
   {
     path: '/advice',
-    name: 'Advice',
+    name: 'advice',
     component: () => import('@/views/AdviceView.vue'),
-    meta: { title: 'アドバイス' }
+    meta: { requiresAuth: true }
   },
   {
     path: '/settings',
-    name: 'Settings',
+    name: 'settings',
     component: () => import('@/views/SettingsView.vue'),
-    meta: { title: '設定' }
+    meta: { requiresAuth: true }
   },
   {
-    path: '/profile',
-    name: 'Profile',
-    component: () => import('@/views/ProfileView.vue'),
-    meta: { title: 'プロフィール編集' }
+    path: '/profile-edit',
+    name: 'profile-edit',
+    component: () => import('@/views/ProfileEditView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: '/goals',
-    name: 'Goals',
-    component: () => import('@/views/GoalsView.vue'),
-    meta: { title: '目標設定' }
+    path: '/goal-setting',
+    name: 'goal-setting',
+    component: () => import('@/views/GoalSettingView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: '/reminders',
-    name: 'Reminders',
-    component: () => import('@/views/RemindersView.vue'),
-    meta: { title: 'リマインダー設定' }
+    path: '/reminder-setting',
+    name: 'reminder-setting',
+    component: () => import('@/views/ReminderSettingView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: '/notifications',
-    name: 'Notifications',
-    component: () => import('@/views/NotificationsView.vue'),
-    meta: { title: '通知設定' }
+    path: '/notification-setting',
+    name: 'notification-setting',
+    component: () => import('@/views/NotificationSettingView.vue'),
+    meta: { requiresAuth: true }
   },
   {
-    path: '/backup',
-    name: 'Backup',
-    component: () => import('@/views/BackupView.vue'),
-    meta: { title: 'データバックアップ' }
+    path: '/data-backup',
+    name: 'data-backup',
+    component: () => import('@/views/DataBackupView.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 
@@ -104,10 +111,17 @@ const router = createRouter({
   routes
 })
 
-// ページタイトルの設定
+// ナビゲーションガード
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title ? `${to.meta.title} - ダイエット応援ノート` : 'ダイエット応援ノート'
-  next()
+  const authStore = useAuthStore()
+  
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next('/login')
+  } else if (to.path === '/login' && authStore.isAuthenticated) {
+    next('/home')
+  } else {
+    next()
+  }
 })
 
 export default router 
