@@ -137,6 +137,12 @@ export const useSettingsStore = defineStore('settings', () => {
     return Math.max(0, Math.min(100, ((365 - totalDays) / 365) * 100))
   })
 
+  // PFC目標とカロリー目標のゲッター
+  const calorieGoal = computed(() => userSettings.value.dailyCalorieGoal)
+  const proteinGoal = computed(() => userSettings.value.pfcGoals.protein)
+  const fatGoal = computed(() => userSettings.value.pfcGoals.fat)
+  const carbsGoal = computed(() => userSettings.value.pfcGoals.carbs)
+
   // アクション
   const loadSettings = async () => {
     try {
@@ -435,6 +441,10 @@ export const useSettingsStore = defineStore('settings', () => {
     recommendedCalorieGoal,
     recommendedPfcGoals,
     targetDateProgress,
+    calorieGoal,
+    proteinGoal,
+    fatGoal,
+    carbsGoal,
     
     // アクション
     loadSettings,

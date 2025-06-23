@@ -5,20 +5,33 @@
       <div class="container mx-auto px-4 py-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center">
-            <router-link to="/records" class="mr-3 text-gray-600 hover:text-gray-800">
+            <router-link to="/home" class="mr-3 text-gray-600 hover:text-gray-800">
               <i class="fas fa-arrow-left text-xl"></i>
             </router-link>
             <h1 class="text-xl font-bold">食事記録</h1>
           </div>
-          <button @click="showHistoryModal = true" class="p-2 text-gray-600 hover:text-gray-800">
-            <i class="fas fa-history text-xl"></i>
-          </button>
+          <div class="flex space-x-2">
+            <button @click="showMyMenuModal = true" class="p-2 text-gray-600 hover:text-gray-800">
+              <i class="fas fa-bookmark text-xl"></i>
+            </button>
+            <button @click="showHistoryModal = true" class="p-2 text-gray-600 hover:text-gray-800">
+              <i class="fas fa-history text-xl"></i>
+            </button>
+          </div>
         </div>
       </div>
     </header>
 
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+        <p class="text-gray-600">データを読み込み中...</p>
+      </div>
+    </div>
+
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-6">
+    <main v-else class="container mx-auto px-4 py-6">
       <!-- Today's Summary -->
       <section class="mb-8">
         <div class="card">
@@ -60,9 +73,14 @@
         <div class="card">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">今日の食事</h2>
-            <button @click="showInputModal = true" class="text-blue-600 hover:text-blue-800 text-sm">
-              <i class="fas fa-plus mr-1"></i>追加
-            </button>
+            <div class="flex space-x-2">
+              <button @click="showTemplateModal = true" class="text-green-600 hover:text-green-800 text-sm">
+                <i class="fas fa-clipboard-list mr-1"></i>テンプレート
+              </button>
+              <button @click="showInputModal = true" class="text-blue-600 hover:text-blue-800 text-sm">
+                <i class="fas fa-plus mr-1"></i>追加
+              </button>
+            </div>
           </div>
           
           <div v-if="todayMeals.length > 0" class="space-y-3">
@@ -70,16 +88,16 @@
               v-for="meal in todayMeals"
               :key="meal.id"
               class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition cursor-pointer"
-              @click="editMeal(meal)"
+              @click="viewMeal(meal)"
             >
               <div class="flex items-center">
                 <div class="w-10 h-10 rounded-full flex items-center justify-center mr-3"
-                     :class="getMealTypeBg(meal.type)">
-                  <i :class="getMealTypeIcon(meal.type)"></i>
+                     :class="getMealTypeBg(meal.mealType)">
+                  <i :class="getMealTypeIcon(meal.mealType)"></i>
                 </div>
                 <div>
                   <p class="font-medium">{{ meal.name }}</p>
-                  <p class="text-sm text-gray-600">{{ meal.description }}</p>
+                  <p class="text-sm text-gray-600">{{ meal.notes || '詳細なし' }}</p>
                   <p class="text-xs text-gray-500">{{ formatTime(meal.timestamp) }}</p>
                 </div>
               </div>
@@ -114,6 +132,7 @@
               <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
                 <div class="bg-blue-600 h-2 rounded-full" :style="{ width: nutritionProgress.protein + '%' }"></div>
               </div>
+              <div class="text-xs text-gray-500">目標: {{ pfcGoals.protein }}g</div>
             </div>
             <div class="text-center p-3 bg-green-50 rounded-lg">
               <div class="text-lg font-bold text-green-600">{{ nutritionBalance.fat }}g</div>
@@ -121,6 +140,7 @@
               <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
                 <div class="bg-green-600 h-2 rounded-full" :style="{ width: nutritionProgress.fat + '%' }"></div>
               </div>
+              <div class="text-xs text-gray-500">目標: {{ pfcGoals.fat }}g</div>
             </div>
             <div class="text-center p-3 bg-orange-50 rounded-lg">
               <div class="text-lg font-bold text-orange-600">{{ nutritionBalance.carbs }}g</div>
@@ -128,6 +148,7 @@
               <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
                 <div class="bg-orange-600 h-2 rounded-full" :style="{ width: nutritionProgress.carbs + '%' }"></div>
               </div>
+              <div class="text-xs text-gray-500">目標: {{ pfcGoals.carbs }}g</div>
             </div>
           </div>
         </div>
@@ -152,12 +173,12 @@
             >
               <div class="flex items-center">
                 <div class="w-10 h-10 rounded-full flex items-center justify-center mr-3"
-                     :class="getMealTypeBg(meal.type)">
-                  <i :class="getMealTypeIcon(meal.type)"></i>
+                     :class="getMealTypeBg(meal.mealType)">
+                  <i :class="getMealTypeIcon(meal.mealType)"></i>
                 </div>
                 <div>
                   <p class="font-medium">{{ meal.name }}</p>
-                  <p class="text-sm text-gray-600">{{ meal.description }}</p>
+                  <p class="text-sm text-gray-600">{{ meal.notes || '詳細なし' }}</p>
                   <p class="text-xs text-gray-500">{{ formatDate(meal.timestamp) }}</p>
                 </div>
               </div>
@@ -181,7 +202,7 @@
 
     <!-- Meal Input Modal -->
     <div v-if="showInputModal" class="modal-overlay" @click="showInputModal = false">
-      <div class="modal-content" @click.stop>
+      <div class="modal-content max-h-screen overflow-y-auto" @click.stop>
         <div class="p-4 border-b border-gray-200 flex justify-between items-center">
           <h3 class="text-lg font-semibold">{{ editingMeal ? '食事を編集' : '食事を記録' }}</h3>
           <button @click="showInputModal = false" class="text-gray-500 hover:text-gray-700">
@@ -196,7 +217,7 @@
               </label>
               <select
                 id="mealType"
-                v-model="mealForm.type"
+                v-model="mealForm.mealType"
                 class="input-field"
                 required
               >
@@ -223,16 +244,15 @@
             </div>
             
             <div class="mb-4">
-              <label for="mealDescription" class="block text-sm font-medium text-gray-700 mb-2">
-                内容
+              <label for="mealNotes" class="block text-sm font-medium text-gray-700 mb-2">
+                内容・メモ
               </label>
               <textarea
-                id="mealDescription"
-                v-model="mealForm.description"
+                id="mealNotes"
+                v-model="mealForm.notes"
                 class="input-field"
                 rows="3"
                 placeholder="食べたものを記録"
-                required
               ></textarea>
             </div>
             
@@ -303,6 +323,33 @@
               </div>
             </div>
             
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label for="fiber" class="block text-sm font-medium text-gray-700 mb-2">
+                  食物繊維 (g)
+                </label>
+                <input
+                  id="fiber"
+                  v-model.number="mealForm.fiber"
+                  type="number"
+                  class="input-field"
+                  placeholder="例: 5"
+                />
+              </div>
+              <div>
+                <label for="sodium" class="block text-sm font-medium text-gray-700 mb-2">
+                  ナトリウム (mg)
+                </label>
+                <input
+                  id="sodium"
+                  v-model.number="mealForm.sodium"
+                  type="number"
+                  class="input-field"
+                  placeholder="例: 800"
+                />
+              </div>
+            </div>
+            
             <div class="flex space-x-3">
               <button type="submit" class="flex-1 btn-primary">
                 {{ editingMeal ? '更新' : '記録' }}
@@ -335,12 +382,12 @@
             >
               <div class="flex items-center">
                 <div class="w-10 h-10 rounded-full flex items-center justify-center mr-3"
-                     :class="getMealTypeBg(meal.type)">
-                  <i :class="getMealTypeIcon(meal.type)"></i>
+                     :class="getMealTypeBg(meal.mealType)">
+                  <i :class="getMealTypeIcon(meal.mealType)"></i>
                 </div>
                 <div>
                   <p class="font-medium">{{ meal.name }}</p>
-                  <p class="text-sm text-gray-600">{{ meal.description }}</p>
+                  <p class="text-sm text-gray-600">{{ meal.notes || '詳細なし' }}</p>
                   <p class="text-xs text-gray-500">{{ formatDateTime(meal.timestamp) }}</p>
                 </div>
               </div>
@@ -358,126 +405,363 @@
         </div>
       </div>
     </div>
+
+    <!-- My Menu Modal -->
+    <div v-if="showMyMenuModal" class="modal-overlay" @click="showMyMenuModal = false">
+      <div class="modal-content max-h-96 overflow-y-auto" @click.stop>
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="text-lg font-semibold">マイメニュー</h3>
+          <div class="flex space-x-2">
+            <button @click="showAddMenuModal = true" class="text-blue-600 hover:text-blue-800 text-sm">
+              <i class="fas fa-plus mr-1"></i>追加
+            </button>
+            <button @click="showMyMenuModal = false" class="text-gray-500 hover:text-gray-700">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="p-4">
+          <div v-if="myMenus.length > 0" class="space-y-3">
+            <div
+              v-for="menu in myMenus"
+              :key="menu.id"
+              class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition cursor-pointer"
+              @click="useMyMenu(menu)"
+            >
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                  <i class="fas fa-bookmark"></i>
+                </div>
+                <div>
+                  <p class="font-medium">{{ menu.name }}</p>
+                  <p class="text-sm text-gray-600">{{ menu.notes || '詳細なし' }}</p>
+                  <p class="text-xs text-gray-500">{{ menu.calories }}kcal</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <button @click.stop="deleteMyMenu(menu.id)" class="text-red-600 hover:text-red-800">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div v-else class="text-center py-8 text-gray-500">
+            <i class="fas fa-bookmark text-3xl mb-2"></i>
+            <p>マイメニューがありません</p>
+            <button @click="showAddMenuModal = true" class="mt-2 text-blue-600 hover:text-blue-800">
+              最初のメニューを追加
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Template Modal -->
+    <div v-if="showTemplateModal" class="modal-overlay" @click="showTemplateModal = false">
+      <div class="modal-content max-h-96 overflow-y-auto" @click.stop>
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="text-lg font-semibold">テンプレート</h3>
+          <button @click="showTemplateModal = false" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="p-4">
+          <div v-if="templates.length > 0" class="space-y-3">
+            <div
+              v-for="template in templates"
+              :key="template.id"
+              class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition cursor-pointer"
+              @click="useTemplate(template)"
+            >
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3">
+                  <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div>
+                  <p class="font-medium">{{ template.name }}</p>
+                  <p class="text-sm text-gray-600">{{ template.notes || '詳細なし' }}</p>
+                  <p class="text-xs text-gray-500">{{ template.calories }}kcal</p>
+                </div>
+              </div>
+              <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+          </div>
+          
+          <div v-else class="text-center py-8 text-gray-500">
+            <i class="fas fa-clipboard-list text-3xl mb-2"></i>
+            <p>テンプレートがありません</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meal Detail Modal -->
+    <div v-if="showDetailModal" class="modal-overlay" @click="showDetailModal = false">
+      <div class="modal-content" @click.stop>
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="text-lg font-semibold">食事詳細</h3>
+          <button @click="showDetailModal = false" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="p-4">
+          <div v-if="selectedMeal" class="space-y-4">
+            <div class="text-center">
+              <div class="text-3xl font-bold text-blue-600 mb-2">{{ selectedMeal.calories }}kcal</div>
+              <p class="text-sm text-gray-600">{{ formatDateTime(selectedMeal.timestamp) }}</p>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4">
+              <div class="text-center p-3 bg-blue-50 rounded-lg">
+                <div class="text-lg font-bold text-blue-600">{{ selectedMeal.protein }}g</div>
+                <div class="text-sm text-gray-600">タンパク質</div>
+              </div>
+              <div class="text-center p-3 bg-green-50 rounded-lg">
+                <div class="text-lg font-bold text-green-600">{{ selectedMeal.fat }}g</div>
+                <div class="text-sm text-gray-600">脂質</div>
+              </div>
+              <div class="text-center p-3 bg-orange-50 rounded-lg">
+                <div class="text-lg font-bold text-orange-600">{{ selectedMeal.carbs }}g</div>
+                <div class="text-sm text-gray-600">炭水化物</div>
+              </div>
+            </div>
+            
+            <div v-if="selectedMeal.notes" class="p-3 bg-gray-50 rounded-lg">
+              <div class="text-sm font-medium text-gray-700 mb-1">メモ</div>
+              <div class="text-gray-600">{{ selectedMeal.notes }}</div>
+            </div>
+          </div>
+          
+          <div class="flex space-x-3 mt-6">
+            <button @click="editMeal(selectedMeal)" class="flex-1 btn-secondary">
+              <i class="fas fa-edit mr-2"></i>編集
+            </button>
+            <button @click="deleteMeal" class="flex-1 btn-danger">
+              <i class="fas fa-trash mr-2"></i>削除
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add My Menu Modal -->
+    <div v-if="showAddMenuModal" class="modal-overlay" @click="showAddMenuModal = false">
+      <div class="modal-content max-h-screen overflow-y-auto" @click.stop>
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="text-lg font-semibold">マイメニューを追加</h3>
+          <button @click="showAddMenuModal = false" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="p-4">
+          <form @submit.prevent="saveMyMenu">
+            <div class="mb-4">
+              <label for="menuName" class="block text-sm font-medium text-gray-700 mb-2">
+                メニュー名
+              </label>
+              <input
+                id="menuName"
+                v-model="menuForm.name"
+                type="text"
+                class="input-field"
+                placeholder="例: 朝食セット"
+                required
+              />
+            </div>
+            
+            <div class="mb-4">
+              <label for="menuNotes" class="block text-sm font-medium text-gray-700 mb-2">
+                内容・メモ
+              </label>
+              <textarea
+                id="menuNotes"
+                v-model="menuForm.notes"
+                class="input-field"
+                rows="3"
+                placeholder="メニューの内容を記録"
+              ></textarea>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label for="menuCalories" class="block text-sm font-medium text-gray-700 mb-2">
+                  カロリー (kcal)
+                </label>
+                <input
+                  id="menuCalories"
+                  v-model.number="menuForm.calories"
+                  type="number"
+                  class="input-field"
+                  placeholder="例: 350"
+                  required
+                />
+              </div>
+              <div>
+                <label for="menuType" class="block text-sm font-medium text-gray-700 mb-2">
+                  食事タイプ
+                </label>
+                <select
+                  id="menuType"
+                  v-model="menuForm.mealType"
+                  class="input-field"
+                  required
+                >
+                  <option value="">選択してください</option>
+                  <option value="breakfast">朝食</option>
+                  <option value="lunch">昼食</option>
+                  <option value="dinner">夕食</option>
+                  <option value="snack">間食</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4 mb-4">
+              <div>
+                <label for="menuProtein" class="block text-sm font-medium text-gray-700 mb-2">
+                  タンパク質 (g)
+                </label>
+                <input
+                  id="menuProtein"
+                  v-model.number="menuForm.protein"
+                  type="number"
+                  class="input-field"
+                  placeholder="例: 15"
+                />
+              </div>
+              <div>
+                <label for="menuFat" class="block text-sm font-medium text-gray-700 mb-2">
+                  脂質 (g)
+                </label>
+                <input
+                  id="menuFat"
+                  v-model.number="menuForm.fat"
+                  type="number"
+                  class="input-field"
+                  placeholder="例: 8"
+                />
+              </div>
+              <div>
+                <label for="menuCarbs" class="block text-sm font-medium text-gray-700 mb-2">
+                  炭水化物 (g)
+                </label>
+                <input
+                  id="menuCarbs"
+                  v-model.number="menuForm.carbs"
+                  type="number"
+                  class="input-field"
+                  placeholder="例: 45"
+                />
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label for="menuFiber" class="block text-sm font-medium text-gray-700 mb-2">
+                  食物繊維 (g)
+                </label>
+                <input
+                  id="menuFiber"
+                  v-model.number="menuForm.fiber"
+                  type="number"
+                  class="input-field"
+                  placeholder="例: 5"
+                />
+              </div>
+              <div>
+                <label for="menuSodium" class="block text-sm font-medium text-gray-700 mb-2">
+                  ナトリウム (mg)
+                </label>
+                <input
+                  id="menuSodium"
+                  v-model.number="menuForm.sodium"
+                  type="number"
+                  class="input-field"
+                  placeholder="例: 800"
+                />
+              </div>
+            </div>
+            
+            <div class="flex space-x-3">
+              <button type="submit" class="flex-1 btn-primary">
+                保存
+              </button>
+              <button type="button" @click="showAddMenuModal = false" class="flex-1 btn-secondary">
+                キャンセル
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
+import { useMealStore } from '@/stores/meal'
+import { useSettingsStore } from '@/stores/settings'
 import BottomNavigation from '@/components/BottomNavigation.vue'
+
+// ストアの初期化
+const mealStore = useMealStore()
+const settingsStore = useSettingsStore()
 
 // リアクティブデータ
 const showInputModal = ref(false)
 const showHistoryModal = ref(false)
+const showDetailModal = ref(false)
+const showMyMenuModal = ref(false)
+const showTemplateModal = ref(false)
+const showAddMenuModal = ref(false)
+const isLoading = ref(true)
 const editingMeal = ref(null)
-
-// カロリー目標
-const calorieGoal = ref(1500)
+const selectedMeal = ref(null)
 
 // 食事フォーム
 const mealForm = reactive({
-  type: '',
+  mealType: '',
   name: '',
-  description: '',
+  notes: '',
   calories: '',
   protein: '',
   fat: '',
   carbs: '',
+  fiber: '',
+  sodium: '',
   time: ''
 })
 
-// 今日の食事
-const todayMeals = ref([
-  {
-    id: 1,
-    type: 'breakfast',
-    name: '朝食',
-    description: 'パン、コーヒー、ヨーグルト',
-    calories: 350,
-    protein: 12,
-    fat: 8,
-    carbs: 45,
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000)
-  },
-  {
-    id: 2,
-    type: 'lunch',
-    name: '昼食',
-    description: 'サラダ、鶏肉、ご飯',
-    calories: 450,
-    protein: 25,
-    fat: 15,
-    carbs: 55,
-    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000)
-  }
-])
+// マイメニューフォーム
+const menuForm = reactive({
+  name: '',
+  notes: '',
+  calories: '',
+  mealType: '',
+  protein: '',
+  fat: '',
+  carbs: '',
+  fiber: '',
+  sodium: ''
+})
 
-// 最近の食事
-const recentMeals = ref([
-  {
-    id: 1,
-    type: 'breakfast',
-    name: '朝食',
-    description: 'パン、コーヒー、ヨーグルト',
-    calories: 350,
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000)
-  },
-  {
-    id: 2,
-    type: 'lunch',
-    name: '昼食',
-    description: 'サラダ、鶏肉、ご飯',
-    calories: 450,
-    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000)
-  },
-  {
-    id: 3,
-    type: 'dinner',
-    name: '夕食',
-    description: '魚、野菜、味噌汁',
-    calories: 380,
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000)
-  }
-])
-
-// 食事履歴
-const mealHistory = ref([
-  {
-    id: 1,
-    type: 'breakfast',
-    name: '朝食',
-    description: 'パン、コーヒー、ヨーグルト',
-    calories: 350,
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000)
-  },
-  {
-    id: 2,
-    type: 'lunch',
-    name: '昼食',
-    description: 'サラダ、鶏肉、ご飯',
-    calories: 450,
-    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000)
-  },
-  {
-    id: 3,
-    type: 'dinner',
-    name: '夕食',
-    description: '魚、野菜、味噌汁',
-    calories: 380,
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000)
-  },
-  {
-    id: 4,
-    type: 'snack',
-    name: '間食',
-    description: 'りんご',
-    calories: 80,
-    timestamp: new Date(Date.now() - 28 * 60 * 60 * 1000)
-  }
-])
+// カロリー目標とPFC目標
+const calorieGoal = computed(() => settingsStore.calorieGoal || 1500)
+const pfcGoals = computed(() => ({
+  protein: settingsStore.proteinGoal || 60,
+  fat: settingsStore.fatGoal || 50,
+  carbs: settingsStore.carbsGoal || 200
+}))
 
 // 計算プロパティ
+const todayMeals = computed(() => mealStore.todayRecords)
+const recentMeals = computed(() => mealStore.sortedRecords.slice(0, 5))
+const mealHistory = computed(() => mealStore.sortedRecords)
+const myMenus = computed(() => mealStore.myMenus)
+const templates = computed(() => mealStore.templates)
+
 const todaySummary = computed(() => {
-  const totalCalories = todayMeals.value.reduce((sum, meal) => sum + meal.calories, 0)
+  const totalCalories = mealStore.todayCalories
   return {
     totalCalories,
     mealCount: todayMeals.value.length,
@@ -485,20 +769,13 @@ const todaySummary = computed(() => {
   }
 })
 
-const nutritionBalance = computed(() => {
-  return todayMeals.value.reduce((balance, meal) => ({
-    protein: balance.protein + (meal.protein || 0),
-    fat: balance.fat + (meal.fat || 0),
-    carbs: balance.carbs + (meal.carbs || 0)
-  }), { protein: 0, fat: 0, carbs: 0 })
-})
+const nutritionBalance = computed(() => mealStore.todayPFC)
 
 const nutritionProgress = computed(() => {
-  const goals = { protein: 60, fat: 50, carbs: 200 }
   return {
-    protein: Math.min((nutritionBalance.value.protein / goals.protein) * 100, 100),
-    fat: Math.min((nutritionBalance.value.fat / goals.fat) * 100, 100),
-    carbs: Math.min((nutritionBalance.value.carbs / goals.carbs) * 100, 100)
+    protein: Math.min((nutritionBalance.value.protein / pfcGoals.value.protein) * 100, 100),
+    fat: Math.min((nutritionBalance.value.fat / pfcGoals.value.fat) * 100, 100),
+    carbs: Math.min((nutritionBalance.value.carbs / pfcGoals.value.carbs) * 100, 100)
   }
 })
 
@@ -543,67 +820,201 @@ const formatDateTime = (timestamp) => {
   })
 }
 
-const saveMeal = () => {
-  if (!mealForm.type || !mealForm.name || !mealForm.calories) return
+const saveMeal = async () => {
+  if (!mealForm.mealType || !mealForm.name || !mealForm.calories) return
   
-  const newMeal = {
-    id: editingMeal.value ? editingMeal.value.id : Date.now(),
-    type: mealForm.type,
-    name: mealForm.name,
-    description: mealForm.description,
-    calories: mealForm.calories,
-    protein: mealForm.protein || 0,
-    fat: mealForm.fat || 0,
-    carbs: mealForm.carbs || 0,
-    timestamp: new Date()
-  }
-  
-  if (editingMeal.value) {
-    // 編集モード
-    const index = todayMeals.value.findIndex(meal => meal.id === editingMeal.value.id)
-    if (index !== -1) {
-      todayMeals.value[index] = newMeal
+  try {
+    const mealData = {
+      mealType: mealForm.mealType,
+      name: mealForm.name,
+      notes: mealForm.notes || '',
+      calories: mealForm.calories,
+      protein: mealForm.protein || 0,
+      fat: mealForm.fat || 0,
+      carbs: mealForm.carbs || 0,
+      fiber: mealForm.fiber || 0,
+      sodium: mealForm.sodium || 0
     }
-    editingMeal.value = null
-  } else {
-    // 新規追加
-    todayMeals.value.unshift(newMeal)
-    recentMeals.value.unshift(newMeal)
-    mealHistory.value.unshift(newMeal)
+
+    if (editingMeal.value) {
+      // 編集モード
+      await mealStore.updateMealRecord(editingMeal.value.id, mealData)
+      editingMeal.value = null
+    } else {
+      // 新規追加
+      await mealStore.addMealRecord(mealData)
+    }
+    
+    // フォームをリセット
+    resetMealForm()
+    showInputModal.value = false
+  } catch (error) {
+    console.error('食事記録保存エラー:', error)
   }
-  
-  // フォームをリセット
-  resetMealForm()
-  showInputModal.value = false
-  
-  window.$notify?.success(editingMeal.value ? '食事を更新しました' : '食事を記録しました')
 }
 
 const editMeal = (meal) => {
   editingMeal.value = meal
-  mealForm.type = meal.type
+  mealForm.mealType = meal.mealType
   mealForm.name = meal.name
-  mealForm.description = meal.description
+  mealForm.notes = meal.notes || ''
   mealForm.calories = meal.calories
   mealForm.protein = meal.protein || ''
   mealForm.fat = meal.fat || ''
   mealForm.carbs = meal.carbs || ''
+  mealForm.fiber = meal.fiber || ''
+  mealForm.sodium = meal.sodium || ''
   mealForm.time = formatTime(meal.timestamp)
+  
+  showDetailModal.value = false
   showInputModal.value = true
 }
 
 const viewMeal = (meal) => {
-  // 食事の詳細表示（必要に応じて実装）
-  console.log('View meal:', meal)
+  selectedMeal.value = meal
+  showDetailModal.value = true
+}
+
+const deleteMeal = async () => {
+  if (!selectedMeal.value) return
+  
+  if (confirm('この食事記録を削除しますか？')) {
+    try {
+      await mealStore.deleteMealRecord(selectedMeal.value.id)
+      showDetailModal.value = false
+      selectedMeal.value = null
+    } catch (error) {
+      console.error('食事記録削除エラー:', error)
+    }
+  }
+}
+
+const useMyMenu = (menu) => {
+  mealForm.mealType = menu.mealType || 'lunch'
+  mealForm.name = menu.name
+  mealForm.notes = menu.notes || ''
+  mealForm.calories = menu.calories
+  mealForm.protein = menu.protein || ''
+  mealForm.fat = menu.fat || ''
+  mealForm.carbs = menu.carbs || ''
+  mealForm.fiber = menu.fiber || ''
+  mealForm.sodium = menu.sodium || ''
+  mealForm.time = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })
+  
+  showMyMenuModal.value = false
+  showInputModal.value = true
+}
+
+const useTemplate = (template) => {
+  mealForm.mealType = template.mealType || 'lunch'
+  mealForm.name = template.name
+  mealForm.notes = template.notes || ''
+  mealForm.calories = template.calories
+  mealForm.protein = template.protein || ''
+  mealForm.fat = template.fat || ''
+  mealForm.carbs = template.carbs || ''
+  mealForm.fiber = template.fiber || ''
+  mealForm.sodium = template.sodium || ''
+  mealForm.time = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })
+  
+  showTemplateModal.value = false
+  showInputModal.value = true
+}
+
+const deleteMyMenu = async (menuId) => {
+  if (confirm('このマイメニューを削除しますか？')) {
+    try {
+      await mealStore.deleteMyMenu(menuId)
+    } catch (error) {
+      console.error('マイメニュー削除エラー:', error)
+    }
+  }
+}
+
+const saveMyMenu = async () => {
+  if (!menuForm.name || !menuForm.calories || !menuForm.mealType) return
+  
+  try {
+    const menuData = {
+      name: menuForm.name,
+      notes: menuForm.notes || '',
+      calories: menuForm.calories,
+      mealType: menuForm.mealType,
+      protein: menuForm.protein || 0,
+      fat: menuForm.fat || 0,
+      carbs: menuForm.carbs || 0,
+      fiber: menuForm.fiber || 0,
+      sodium: menuForm.sodium || 0
+    }
+
+    await mealStore.addMyMenu(menuData)
+    
+    // フォームをリセット
+    resetMenuForm()
+    showAddMenuModal.value = false
+  } catch (error) {
+    console.error('マイメニュー保存エラー:', error)
+  }
 }
 
 const resetMealForm = () => {
   Object.keys(mealForm).forEach(key => {
     mealForm[key] = ''
   })
+  editingMeal.value = null
+}
+
+const resetMenuForm = () => {
+  Object.keys(menuForm).forEach(key => {
+    menuForm[key] = ''
+  })
+}
+
+const loadData = async () => {
+  try {
+    isLoading.value = true
+    await Promise.all([
+      mealStore.loadData(),
+      settingsStore.loadSettings()
+    ])
+  } catch (error) {
+    console.error('データ読み込みエラー:', error)
+  } finally {
+    isLoading.value = false
+  }
 }
 
 onMounted(() => {
-  // 初期化処理
+  loadData()
 })
-</script> 
+</script>
+
+<style scoped>
+.card {
+  @apply bg-white rounded-lg shadow-sm p-6;
+}
+
+.input-field {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.btn-secondary {
+  @apply bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500;
+}
+
+.btn-danger {
+  @apply bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white rounded-lg shadow-xl max-w-md w-full mx-4;
+}
+</style> 
