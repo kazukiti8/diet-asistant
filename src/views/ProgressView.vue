@@ -855,10 +855,10 @@ onMounted(async () => {
   try {
     isLoading.value = true
     await Promise.all([
-      weightStore.loadData(),
-      mealStore.loadData(),
-      exerciseStore.loadData(),
-      progressStore.loadData()
+      weightStore.loadRecords(),
+      mealStore.loadRecords(),
+      exerciseStore.loadRecords(),
+      progressStore.loadRecords()
     ])
   } catch (error) {
     console.error('データ読み込みエラー:', error)

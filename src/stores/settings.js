@@ -226,6 +226,70 @@ export const useSettingsStore = defineStore('settings', () => {
     }
   }
 
+  // 目標設定画面専用メソッド
+  const setGoals = async (goals) => {
+    try {
+      const updates = {
+        age: goals.age,
+        gender: goals.gender,
+        height: goals.height,
+        activityLevel: goals.activityLevel,
+        targetWeight: parseFloat(goals.targetWeight),
+        dailyCalorieGoal: parseInt(goals.targetCalories),
+        pfcGoals: {
+          protein: Math.round((goals.targetCalories * goals.proteinRatio / 100) / 4),
+          fat: Math.round((goals.targetCalories * goals.fatRatio / 100) / 9),
+          carbs: Math.round((goals.targetCalories * goals.carbsRatio / 100) / 4)
+        },
+        // 追加の目標情報
+        goalPeriod: goals.goalPeriod,
+        exerciseFrequency: goals.exerciseFrequency,
+        exerciseDuration: goals.exerciseDuration,
+        exerciseTypes: goals.exerciseTypes,
+        purposes: goals.purposes,
+        currentWeight: goals.currentWeight,
+        createdAt: goals.createdAt,
+        updatedAt: goals.updatedAt
+      }
+
+      await updateSettings(updates)
+      return { success: true }
+    } catch (error) {
+      console.error('目標設定エラー:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  const getGoals = async () => {
+    try {
+      const goals = {
+        age: userSettings.value.age,
+        gender: userSettings.value.gender,
+        height: userSettings.value.height,
+        activityLevel: userSettings.value.activityLevel,
+        targetWeight: userSettings.value.targetWeight,
+        targetCalories: userSettings.value.dailyCalorieGoal,
+        proteinRatio: userSettings.value.pfcGoals ? Math.round((userSettings.value.pfcGoals.protein * 4 / userSettings.value.dailyCalorieGoal) * 100) : 20,
+        fatRatio: userSettings.value.pfcGoals ? Math.round((userSettings.value.pfcGoals.fat * 9 / userSettings.value.dailyCalorieGoal) * 100) : 25,
+        carbsRatio: userSettings.value.pfcGoals ? Math.round((userSettings.value.pfcGoals.carbs * 4 / userSettings.value.dailyCalorieGoal) * 100) : 55,
+        goalPeriod: userSettings.value.goalPeriod,
+        exerciseFrequency: userSettings.value.exerciseFrequency,
+        exerciseDuration: userSettings.value.exerciseDuration,
+        exerciseTypes: userSettings.value.exerciseTypes || [],
+        purposes: userSettings.value.purposes || [],
+        currentWeight: userSettings.value.currentWeight,
+        createdAt: userSettings.value.createdAt,
+        updatedAt: userSettings.value.updatedAt
+      }
+      
+      // 目標が設定されているかチェック
+      return goals.targetWeight && goals.targetCalories ? goals : null
+    } catch (error) {
+      console.error('目標取得エラー:', error)
+      return null
+    }
+  }
+
   const updateNotifications = async (notificationSettings) => {
     try {
       const updates = {
@@ -452,6 +516,8 @@ export const useSettingsStore = defineStore('settings', () => {
     updateSettings,
     updateProfile,
     updateGoals,
+    setGoals,
+    getGoals,
     updateNotifications,
     updateReminders,
     updateCheerCharacter,
