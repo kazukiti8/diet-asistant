@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アドバイス・コラム - ダイエット応援ノート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f9a8d4 0%, #93c5fd 100%);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .article-card {
+            transition: all 0.3s ease;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-tab {
+            transition: all 0.3s ease;
+        }
+        
+        .category-tab.active {
+            background: linear-gradient(135deg, #f9a8d4 0%, #93c5fd 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <button onclick="history.back()" class="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="text-xl font-bold">アドバイス・コラム</h1>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button class="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition">
+                    <i class="fas fa-bookmark"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Today's Motivation -->
+        <section class="mb-6 fade-in">
+            <div class="bg-gradient-to-r from-pink-50 to-blue-50 rounded-xl shadow-md p-6">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-pink-400 to-blue-400 flex items-center justify-center">
+                            <i class="fas fa-heart text-2xl text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <h2 class="text-lg font-semibold mb-2">今日の応援メッセージ</h2>
+                        <p class="text-gray-700 mb-3">
+                            「小さな一歩が大きな変化を生みます。今日の努力は必ず明日の結果につながります。あなたの頑張りを応援しています！」
+                        </p>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-calendar-alt mr-1"></i>
+                            <span>2024年1月15日</span>
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-heart text-pink-500 mr-1"></i>
+                            <span>1,234人がいいね</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Tabs -->
+        <section class="mb-6 fade-in">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="flex overflow-x-auto">
+                    <button class="category-tab active flex-shrink-0 py-4 px-6 text-center font-medium whitespace-nowrap">
+                        <i class="fas fa-star text-lg mb-1 block"></i>
+                        <span class="text-xs">おすすめ</span>
+                    </button>
+                    <button class="category-tab flex-shrink-0 py-4 px-6 text-center font-medium text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                        <i class="fas fa-utensils text-lg mb-1 block"></i>
+                        <span class="text-xs">食事</span>
+                    </button>
+                    <button class="category-tab flex-shrink-0 py-4 px-6 text-center font-medium text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                        <i class="fas fa-running text-lg mb-1 block"></i>
+                        <span class="text-xs">運動</span>
+                    </button>
+                    <button class="category-tab flex-shrink-0 py-4 px-6 text-center font-medium text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                        <i class="fas fa-brain text-lg mb-1 block"></i>
+                        <span class="text-xs">メンタル</span>
+                    </button>
+                    <button class="category-tab flex-shrink-0 py-4 px-6 text-center font-medium text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                        <i class="fas fa-lightbulb text-lg mb-1 block"></i>
+                        <span class="text-xs">豆知識</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Articles List -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold">おすすめ記事</h2>
+                    <button id="refreshArticles" class="text-blue-600 hover:text-blue-800 text-sm">
+                        <i class="fas fa-sync-alt mr-1"></i>更新
+                    </button>
+                </div>
+                
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden">
+                    <div class="flex items-center justify-center py-8">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <span class="ml-3 text-gray-600">記事を読み込み中...</span>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div id="errorState" class="hidden">
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-exclamation-triangle text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">読み込みエラー</h3>
+                        <p class="text-gray-600 mb-4">記事の読み込みに失敗しました</p>
+                        <button id="retryLoad" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                            再試行
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="hidden">
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-newspaper text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">記事が見つかりません</h3>
+                        <p class="text-gray-600 mb-4">条件を変更して再度検索してください</p>
+                        <button id="clearFilters" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                            フィルターをクリア
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Articles Content -->
+                <div id="articlesContent">
+                    <div class="space-y-4">
+                        <!-- Article 1 -->
+                        <div class="article-card bg-white rounded-xl shadow-md overflow-hidden">
+                            <div class="md:flex">
+                                <div class="md:w-1/3">
+                                    <div class="h-48 md:h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                                        <i class="fas fa-apple-alt text-4xl text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex items-center mb-2">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">食事</span>
+                                        <span class="ml-2 text-xs text-gray-500">5分前</span>
+                                    </div>
+                                    <h3 class="font-semibold text-lg mb-2">ダイエット初心者必見！朝食で痩せる3つのコツ</h3>
+                                    <p class="text-gray-600 text-sm mb-3">
+                                        朝食を抜くのは逆効果？正しい朝食の取り方で代謝を上げて、効率的にダイエットを成功させましょう。
+                                    </p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            <span>2,456</span>
+                                            <i class="fas fa-heart ml-3 mr-1 text-pink-500"></i>
+                                            <span>189</span>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                            読む <i class="fas fa-arrow-right ml-1"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Article 2 -->
+                        <div class="article-card bg-white rounded-xl shadow-md overflow-hidden">
+                            <div class="md:flex">
+                                <div class="md:w-1/3">
+                                    <div class="h-48 md:h-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                                        <i class="fas fa-dumbbell text-4xl text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex items-center mb-2">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">運動</span>
+                                        <span class="ml-2 text-xs text-gray-500">1時間前</span>
+                                    </div>
+                                    <h3 class="font-semibold text-lg mb-2">自宅でできる！10分で全身を鍛える運動メニュー</h3>
+                                    <p class="text-gray-600 text-sm mb-3">
+                                        忙しい人でも続けられる、自宅でできる簡単運動メニューを紹介。器具なしでも効果的に全身を鍛えられます。
+                                    </p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            <span>1,892</span>
+                                            <i class="fas fa-heart ml-3 mr-1 text-pink-500"></i>
+                                            <span>156</span>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                            読む <i class="fas fa-arrow-right ml-1"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Tips -->
+        <section class="mb-6 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                    今日の豆知識
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3 flex-shrink-0">
+                                <i class="fas fa-info"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-1">水分補給のタイミング</h4>
+                                <p class="text-sm text-gray-600">運動前30分にコップ1杯の水を飲むと、代謝がアップします。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3 flex-shrink-0">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-1">野菜の食べ方</h4>
+                                <p class="text-sm text-gray-600">生野菜より温野菜の方が、より多くの栄養を吸収できます。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Articles -->
+        <section class="mb-6 fade-in">
+            <h3 class="text-lg font-semibold mb-4">最新記事</h3>
+            <div class="space-y-4">
+                <!-- Recent Article 1 -->
+                <div class="article-card bg-white rounded-lg shadow-md p-4">
+                    <div class="flex items-start">
+                        <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center mr-4 flex-shrink-0">
+                            <i class="fas fa-bed text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center mb-1">
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">メンタル</span>
+                                <span class="ml-2 text-xs text-gray-500">2時間前</span>
+                            </div>
+                            <h4 class="font-medium mb-1">ダイエット中のストレス解消法</h4>
+                            <p class="text-sm text-gray-600">ストレスがダイエットの敵になる理由と、効果的な解消法を紹介します。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Article 2 -->
+                <div class="article-card bg-white rounded-lg shadow-md p-4">
+                    <div class="flex items-start">
+                        <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center mr-4 flex-shrink-0">
+                            <i class="fas fa-chart-line text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center mb-1">
+                                <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">豆知識</span>
+                                <span class="ml-2 text-xs text-gray-500">4時間前</span>
+                            </div>
+                            <h4 class="font-medium mb-1">体重の変動について知っておくべきこと</h4>
+                            <p class="text-sm text-gray-600">1日の体重変動は正常です。正しい体重の測り方と記録のコツ。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Article 3 -->
+                <div class="article-card bg-white rounded-lg shadow-md p-4">
+                    <div class="flex items-start">
+                        <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center mr-4 flex-shrink-0">
+                            <i class="fas fa-clock text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center mb-1">
+                                <span class="px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded-full">食事</span>
+                                <span class="ml-2 text-xs text-gray-500">6時間前</span>
+                            </div>
+                            <h4 class="font-medium mb-1">食事のタイミングで痩せやすさが変わる</h4>
+                            <p class="text-sm text-gray-600">朝・昼・夕食の理想的な時間と、間食の取り方について解説。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Motivation Corner -->
+        <section class="fade-in">
+            <div class="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl shadow-md p-6">
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 flex items-center justify-center">
+                        <i class="fas fa-star text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">今週の目標達成者</h3>
+                    <p class="text-gray-700 mb-4">
+                        先週、目標体重を達成された方が15名いらっしゃいました！<br>
+                        あなたもきっとできます。一緒に頑張りましょう！
+                    </p>
+                    <button class="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-600 transition">
+                        <i class="fas fa-trophy mr-2"></i>成功事例を見る
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Functionality -->
+        <section class="mb-6 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="relative">
+                    <input type="text" 
+                           id="searchInput"
+                           placeholder="アドバイスやコラムを検索..." 
+                           class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <button class="search-tag px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200 transition">#初心者向け</button>
+                    <button class="search-tag px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm hover:bg-green-200 transition">#食事</button>
+                    <button class="search-tag px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm hover:bg-purple-200 transition">#運動</button>
+                    <button class="search-tag px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm hover:bg-orange-200 transition">#モチベーション</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Personalized Advice -->
+        <section class="mb-6 fade-in">
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i class="fas fa-user-check text-purple-500 mr-2"></i>
+                    あなた専用のアドバイス
+                </h3>
+                <div class="space-y-4">
+                    <div class="bg-white rounded-lg p-4 border-l-4 border-blue-500">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mr-3">
+                                <i class="fas fa-utensils text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-1">食事アドバイス</h4>
+                                <p class="text-sm text-gray-600">最近の記録を見ると、タンパク質の摂取が少なめです。鶏むね肉や豆腐を意識的に取り入れてみてください。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 border-l-4 border-green-500">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mr-3">
+                                <i class="fas fa-running text-green-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-1">運動アドバイス</h4>
+                                <p class="text-sm text-gray-600">運動頻度が増えてきていますね！次は運動時間を少しずつ延ばしてみることをお勧めします。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 border-l-4 border-purple-500">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mr-3">
+                                <i class="fas fa-chart-line text-purple-500"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800 mb-1">進捗アドバイス</h4>
+                                <p class="text-sm text-gray-600">順調に減量が進んでいます。このペースを維持できれば、目標達成も間近です！</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-around">
+                <a href="ホーム画面.html" class="py-3 px-4 flex flex-col items-center text-gray-500 hover:text-blue-600">
+                    <i class="fas fa-home text-xl mb-1"></i>
+                    <span class="text-xs">ホーム</span>
+                </a>
+                <a href="進捗詳細画面.html" class="py-3 px-4 flex flex-col items-center text-gray-500 hover:text-blue-600">
+                    <i class="fas fa-chart-line text-xl mb-1"></i>
+                    <span class="text-xs">進捗</span>
+                </a>
+                <a href="#" class="py-3 px-4 flex flex-col items-center text-gray-500 hover:text-blue-600">
+                    <i class="fas fa-book text-xl mb-1"></i>
+                    <span class="text-xs">記録</span>
+                </a>
+                <a href="設定画面.html" class="py-3 px-4 flex flex-col items-center text-gray-500 hover:text-blue-600">
+                    <i class="fas fa-cog text-xl mb-1"></i>
+                    <span class="text-xs">設定</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Quick Navigation Modal -->
+    <div id="quickNavModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">記録を追加</h3>
+                <button id="closeQuickNavModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <a href="体重記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <span class="text-sm font-medium">体重</span>
+                    </a>
+                    <a href="食事記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <span class="text-sm font-medium">食事</span>
+                    </a>
+                    <a href="運動記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <span class="text-sm font-medium">運動</span>
+                    </a>
+                    <a href="運動メニュー提案画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <span class="text-sm font-medium">運動メニュー</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article Detail Modal -->
+    <div id="articleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">記事詳細</h3>
+                <button id="closeArticleModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="mb-4">
+                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">食事</span>
+                    <span class="ml-2 text-xs text-gray-500">5分前</span>
+                </div>
+                <h4 class="text-xl font-semibold mb-4">ダイエット初心者必見！朝食で痩せる3つのコツ</h4>
+                <div class="prose max-w-none">
+                    <p class="text-gray-700 mb-4">
+                        朝食を抜くのは逆効果？正しい朝食の取り方で代謝を上げて、効率的にダイエットを成功させましょう。
+                    </p>
+                    <h5 class="font-semibold text-lg mb-2">1. タンパク質を意識する</h5>
+                    <p class="text-gray-700 mb-4">
+                        朝食には卵やヨーグルトなどのタンパク質を積極的に取り入れましょう。タンパク質は代謝を上げ、満腹感を長く保つ効果があります。
+                    </p>
+                    <h5 class="font-semibold text-lg mb-2">2. 適度な炭水化物を摂る</h5>
+                    <p class="text-gray-700 mb-4">
+                        朝食で炭水化物を摂ることで、脳のエネルギー源となり、一日の活動効率が上がります。ただし、量は控えめにしましょう。
+                    </p>
+                    <h5 class="font-semibold text-lg mb-2">3. 時間をかけてゆっくり食べる</h5>
+                    <p class="text-gray-700 mb-4">
+                        朝食は最低15分はかけてゆっくり食べましょう。早食いすると満腹感を感じにくく、過食の原因になります。
+                    </p>
+                </div>
+                <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-eye mr-1"></i>
+                        <span>2,456</span>
+                        <i class="fas fa-heart ml-3 mr-1 text-pink-500"></i>
+                        <span>189</span>
+                    </div>
+                    <button class="bg-gradient-to-r from-pink-500 to-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-pink-600 hover:to-blue-600 transition">
+                        <i class="fas fa-heart mr-2"></i>いいね
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Category tab switching
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Article modal
+        document.querySelectorAll('.article-card button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('articleModal').classList.remove('hidden');
+            });
+        });
+        
+        document.getElementById('closeArticleModal').addEventListener('click', function() {
+            document.getElementById('articleModal').classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('articleModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // Like button functionality
+        document.querySelectorAll('.fa-heart').forEach(heart => {
+            heart.addEventListener('click', function() {
+                this.classList.toggle('text-pink-500');
+                this.classList.toggle('text-gray-400');
+            });
+        });
+
+        // Quick navigation modal
+        document.getElementById('closeQuickNavModal').addEventListener('click', function() {
+            document.getElementById('quickNavModal').classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('quickNavModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html> 

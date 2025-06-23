@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新規登録 - ダイエット応援ノート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .step.active {
+            background: #3b82f6;
+            color: white;
+        }
+        .step.completed {
+            background: #10b981;
+            color: white;
+        }
+        .step.inactive {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <a href="ログイン画面.html" class="text-white hover:text-gray-200">
+                    <i class="fas fa-arrow-left mr-2"></i>戻る
+                </a>
+                <h1 class="text-xl font-bold">新規登録</h1>
+                <div class="w-8"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Step Indicator -->
+        <div class="step-indicator fade-in">
+            <div class="step active" id="step1">1</div>
+            <div class="step inactive" id="step2">2</div>
+            <div class="step inactive" id="step3">3</div>
+        </div>
+
+        <!-- Step 1: Account Info -->
+        <section id="step1Content" class="max-w-md mx-auto fade-in">
+            <div class="bg-white rounded-xl shadow-md p-8">
+                <h2 class="text-2xl font-bold text-center mb-6">アカウント情報</h2>
+                
+                <form id="accountForm" class="space-y-6">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-2">ユーザー名 <span class="text-red-500">*</span></label>
+                        <input type="text" id="username" name="username" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="ユーザー名を入力">
+                        <p class="text-xs text-gray-500 mt-1">3-20文字で入力してください</p>
+                    </div>
+                    
+                    <div>
+                        <label for="nickname" class="block text-sm font-medium text-gray-700 mb-2">ニックネーム <span class="text-red-500">*</span></label>
+                        <input type="text" id="nickname" name="nickname" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="ニックネームを入力">
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">メールアドレス <span class="text-red-500">*</span></label>
+                        <input type="email" id="email" name="email" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="example@email.com">
+                    </div>
+                    
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">パスワード <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input type="password" id="password" name="password" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+                                   placeholder="8文字以上で入力">
+                            <button type="button" id="togglePassword" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="mt-2 space-y-1">
+                            <div class="flex items-center text-xs">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span class="text-gray-600">8文字以上</span>
+                            </div>
+                            <div class="flex items-center text-xs">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span class="text-gray-600">英数字を含む</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">パスワード確認 <span class="text-red-500">*</span></label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="パスワードを再入力">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition font-semibold">
+                        次へ
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Step 2: Profile Info -->
+        <section id="step2Content" class="max-w-md mx-auto fade-in hidden">
+            <div class="bg-white rounded-xl shadow-md p-8">
+                <h2 class="text-2xl font-bold text-center mb-6">プロフィール情報</h2>
+                
+                <form id="profileForm" class="space-y-6">
+                    <div>
+                        <label for="age" class="block text-sm font-medium text-gray-700 mb-2">年齢 <span class="text-red-500">*</span></label>
+                        <input type="number" id="age" name="age" min="13" max="100" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="年齢を入力">
+                    </div>
+                    
+                    <div>
+                        <label for="gender" class="block text-sm font-medium text-gray-700 mb-2">性別 <span class="text-red-500">*</span></label>
+                        <select id="gender" name="gender" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">選択してください</option>
+                            <option value="male">男性</option>
+                            <option value="female">女性</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="height" class="block text-sm font-medium text-gray-700 mb-2">身長 (cm) <span class="text-red-500">*</span></label>
+                        <input type="number" id="height" name="height" min="100" max="250" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="身長を入力">
+                    </div>
+                    
+                    <div>
+                        <label for="currentWeight" class="block text-sm font-medium text-gray-700 mb-2">現在の体重 (kg) <span class="text-red-500">*</span></label>
+                        <input type="number" id="currentWeight" name="currentWeight" step="0.1" min="30" max="200" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="現在の体重を入力">
+                    </div>
+                    
+                    <div>
+                        <label for="activityLevel" class="block text-sm font-medium text-gray-700 mb-2">活動レベル <span class="text-red-500">*</span></label>
+                        <select id="activityLevel" name="activityLevel" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">選択してください</option>
+                            <option value="sedentary">ほとんど運動しない</option>
+                            <option value="lightly">軽い運動（週1-3回）</option>
+                            <option value="moderately">中程度の運動（週3-5回）</option>
+                            <option value="very">激しい運動（週6-7回）</option>
+                            <option value="extremely">非常に激しい運動</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="button" id="backToStep1" class="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg hover:bg-gray-600 transition font-semibold">
+                            戻る
+                        </button>
+                        <button type="submit" class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition font-semibold">
+                            次へ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Step 3: Goal Setting -->
+        <section id="step3Content" class="max-w-md mx-auto fade-in hidden">
+            <div class="bg-white rounded-xl shadow-md p-8">
+                <h2 class="text-2xl font-bold text-center mb-6">目標設定</h2>
+                
+                <form id="goalForm" class="space-y-6">
+                    <div>
+                        <label for="targetWeight" class="block text-sm font-medium text-gray-700 mb-2">目標体重 (kg) <span class="text-red-500">*</span></label>
+                        <input type="number" id="targetWeight" name="targetWeight" step="0.1" min="30" max="200" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="目標体重を入力">
+                    </div>
+                    
+                    <div>
+                        <label for="targetDate" class="block text-sm font-medium text-gray-700 mb-2">目標達成期間 <span class="text-red-500">*</span></label>
+                        <input type="date" id="targetDate" name="targetDate" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">ダイエットの目的 <span class="text-red-500">*</span></label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="purposes" value="weight_loss" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm">体重を減らしたい</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="purposes" value="health" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm">健康になりたい</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="purposes" value="confidence" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm">自信をつけたい</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="purposes" value="fitness" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm">体を引き締めたい</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="button" id="backToStep2" class="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg hover:bg-gray-600 transition font-semibold">
+                            戻る
+                        </button>
+                        <button type="submit" class="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition font-semibold">
+                            登録完了
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-500 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">登録完了！</h3>
+                <p class="text-sm text-gray-600 mb-4">アカウントの作成が完了しました。ダイエットの旅を始めましょう！</p>
+                <button id="goToHome" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
+                    ホーム画面へ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        // パスワード表示切り替え
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        // ステップ更新
+        function updateStep(step) {
+            // ステップインジケーター更新
+            for (let i = 1; i <= totalSteps; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.className = 'step completed';
+                } else if (i === step) {
+                    stepElement.className = 'step active';
+                } else {
+                    stepElement.className = 'step inactive';
+                }
+            }
+
+            // コンテンツ表示切り替え
+            document.getElementById('step1Content').classList.toggle('hidden', step !== 1);
+            document.getElementById('step2Content').classList.toggle('hidden', step !== 2);
+            document.getElementById('step3Content').classList.toggle('hidden', step !== 3);
+        }
+
+        // アカウント情報フォーム
+        document.getElementById('accountForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('パスワードが一致しません');
+                return;
+            }
+            
+            if (password.length < 8) {
+                alert('パスワードは8文字以上で入力してください');
+                return;
+            }
+            
+            currentStep = 2;
+            updateStep(currentStep);
+        });
+
+        // プロフィール情報フォーム
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            currentStep = 3;
+            updateStep(currentStep);
+        });
+
+        // 目標設定フォーム
+        document.getElementById('goalForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const purposes = document.querySelectorAll('input[name="purposes"]:checked');
+            if (purposes.length === 0) {
+                alert('ダイエットの目的を選択してください');
+                return;
+            }
+            
+            // 成功モーダル表示
+            document.getElementById('successModal').classList.remove('hidden');
+        });
+
+        // 戻るボタン
+        document.getElementById('backToStep1').addEventListener('click', function() {
+            currentStep = 1;
+            updateStep(currentStep);
+        });
+
+        document.getElementById('backToStep2').addEventListener('click', function() {
+            currentStep = 2;
+            updateStep(currentStep);
+        });
+
+        // ホーム画面へ遷移
+        document.getElementById('goToHome').addEventListener('click', function() {
+            window.location.href = 'ホーム画面.html';
+        });
+
+        // 目標日付の最小値を今日に設定
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('targetDate').min = today;
+    </script>
+</body>
+</html> 

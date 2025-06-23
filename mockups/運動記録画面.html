@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>運動記録 - ダイエット応援ノート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f8fafc; }
+        .gradient-bg { background: linear-gradient(135deg, #f9a8d4 0%, #93c5fd 100%); }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-input { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); transition: border-color 0.2s; }
+        .form-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #4b5563; }
+    </style>
+</head>
+<body class="text-gray-800 pb-20">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <button onclick="history.back()" class="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="text-xl font-bold">運動記録</h1>
+            </div>
+            <div class="w-8 h-8"></div> <!-- Spacer for centering -->
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <section class="fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-700">運動記録</h2>
+                    <input type="date" value="2024-03-10" class="form-input w-auto text-sm">
+                </div>
+
+                <form>
+                    <div class="mb-4">
+                        <label for="exercise-name" class="form-label">運動の種類/名称</label>
+                        <input type="text" id="exercise-name" class="form-input" placeholder="例: ウォーキング, スクワット">
+                    </div>
+                    <button type="button" class="w-full bg-purple-100 text-purple-700 px-4 py-2 rounded-lg hover:bg-purple-200 transition mb-4 text-sm">
+                        <i class="fas fa-dumbbell mr-1"></i> 提案された運動メニューから入力
+                    </button>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="exercise-duration" class="form-label">運動時間</label>
+                            <input type="text" id="exercise-duration" class="form-input" placeholder="例: 30分, 1時間">
+                        </div>
+                        <div>
+                            <label for="exercise-calories" class="form-label">消費カロリー (kcal)</label>
+                            <input type="number" id="exercise-calories" class="form-input" placeholder="例: 150">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="exercise-intensity" class="form-label">強度/負荷 (任意)</label>
+                        <select id="exercise-intensity" class="form-input">
+                            <option>選択してください</option>
+                            <option>軽い</option>
+                            <option>普通</option>
+                            <option>きつい</option>
+                        </select>
+                    </div>
+                    <div class="mb-6">
+                        <label for="exercise-memo" class="form-label">メモ (任意)</label>
+                        <textarea id="exercise-memo" rows="3" class="form-input" placeholder="例: 今日は調子が良かった"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition font-semibold">
+                        <i class="fas fa-save mr-2"></i> この運動を記録する
+                    </button>
+                </form>
+                <div class="mt-8 border-t pt-6">
+                    <h3 class="text-lg font-semibold mb-2">今日の運動サマリー</h3>
+                    <p class="text-gray-600">総消費カロリー: <span class="font-bold">300 kcal</span></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div class="flex justify-around items-center py-2">
+            <a href="ホーム画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span class="text-xs">ホーム</span>
+            </a>
+            <a href="進捗詳細画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-chart-line text-xl mb-1"></i>
+                <span class="text-xs">進捗</span>
+            </a>
+            <a href="記録選択画面.html" class="flex flex-col items-center py-2 px-3 text-blue-600">
+                <i class="fas fa-plus-circle text-xl mb-1"></i>
+                <span class="text-xs">記録</span>
+            </a>
+            <a href="アドバイス画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-lightbulb text-xl mb-1"></i>
+                <span class="text-xs">アドバイス</span>
+            </a>
+            <a href="設定画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-cog text-xl mb-1"></i>
+                <span class="text-xs">設定</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Quick Navigation Modal -->
+    <div id="quickNavModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">記録を追加</h3>
+                <button id="closeQuickNavModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <a href="体重記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <span class="text-sm font-medium">体重</span>
+                    </a>
+                    <a href="食事記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <span class="text-sm font-medium">食事</span>
+                    </a>
+                    <a href="運動記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition bg-blue-50 border-blue-200">
+                        <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <span class="text-sm font-medium">運動</span>
+                    </a>
+                    <a href="運動メニュー提案画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <span class="text-sm font-medium">運動メニュー</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Record navigation button
+        document.getElementById('recordNavBtn').addEventListener('click', function() {
+            document.getElementById('quickNavModal').classList.remove('hidden');
+        });
+        
+        // Quick navigation modal
+        document.getElementById('closeQuickNavModal').addEventListener('click', function() {
+            document.getElementById('quickNavModal').classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('quickNavModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // Record type buttons (now links)
+        document.querySelectorAll('.record-type-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // Let the link work naturally, just close the modal
+                document.getElementById('quickNavModal').classList.add('hidden');
+            });
+        });
+
+        // Auto-fill exercise data from URL parameters
+        function autoFillExerciseData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const exercise = urlParams.get('exercise');
+            const duration = urlParams.get('duration');
+            const calories = urlParams.get('calories');
+
+            if (exercise) {
+                const exerciseNames = {
+                    'squat': 'スクワット',
+                    'plank': 'プランク',
+                    'pushup': '腕立て伏せ',
+                    'legraise': 'レッグレイズ',
+                    'stretching': 'ストレッチ'
+                };
+                
+                document.getElementById('exercise-name').value = exerciseNames[exercise] || exercise;
+            }
+            
+            if (duration) {
+                document.getElementById('exercise-duration').value = duration + '分';
+            }
+            
+            if (calories) {
+                document.getElementById('exercise-calories').value = calories;
+            }
+        }
+
+        // Initialize auto-fill when page loads
+        document.addEventListener('DOMContentLoaded', autoFillExerciseData);
+    </script>
+</body>
+</html>

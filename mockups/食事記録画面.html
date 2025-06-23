@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>食事記録 - ダイエット応援ノート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f8fafc; }
+        .gradient-bg { background: linear-gradient(135deg, #f9a8d4 0%, #93c5fd 100%); }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-input { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); transition: border-color 0.2s; }
+        .form-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #4b5563; }
+    </style>
+</head>
+<body class="text-gray-800 pb-20">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <button onclick="history.back()" class="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="text-xl font-bold">食事記録</h1>
+            </div>
+            <div class="w-8 h-8"></div> <!-- Spacer for centering -->
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <section class="fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-700">食事記録</h2>
+                    <input type="date" value="2024-03-10" class="form-input w-auto text-sm">
+                </div>
+
+                <form>
+                    <div class="mb-4">
+                        <label for="meal-timing" class="form-label">食事タイミング</label>
+                        <select id="meal-timing" class="form-input">
+                            <option>朝食</option>
+                            <option>昼食</option>
+                            <option>夕食</option>
+                            <option>間食</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="meal-name" class="form-label">品名/料理名</label>
+                        <input type="text" id="meal-name" class="form-input" placeholder="例: 鶏むね肉ソテー">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="meal-amount" class="form-label">量</label>
+                            <input type="text" id="meal-amount" class="form-input" placeholder="例: 150g, 1個">
+                        </div>
+                        <div>
+                            <label for="meal-calories" class="form-label">カロリー (kcal)</label>
+                            <input type="number" id="meal-calories" class="form-input" placeholder="例: 200">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h3 class="form-label mb-2">PFCバランス (任意)</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label for="meal-protein" class="text-xs text-gray-500">タンパク質(g)</label>
+                                <input type="number" id="meal-protein" class="form-input mt-1" placeholder="例: 20">
+                            </div>
+                            <div>
+                                <label for="meal-fat" class="text-xs text-gray-500">脂質(g)</label>
+                                <input type="number" id="meal-fat" class="form-input mt-1" placeholder="例: 10">
+                            </div>
+                            <div>
+                                <label for="meal-carbs" class="text-xs text-gray-500">炭水化物(g)</label>
+                                <input type="number" id="meal-carbs" class="form-input mt-1" placeholder="例: 5">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="meal-photo" class="form-label">写真 (任意)</label>
+                        <input type="file" id="meal-photo" class="form-input">
+                    </div>
+                    <div class="mb-6">
+                        <label for="meal-memo" class="form-label">メモ (任意)</label>
+                        <textarea id="meal-memo" rows="3" class="form-input" placeholder="例: 外食だった、少し食べ過ぎた"></textarea>
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 mb-6">
+                        <button type="button" id="myMenuBtn" class="w-full sm:w-auto flex-1 bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200 transition text-sm">
+                            <i class="fas fa-star mr-1"></i> マイメニューから選択
+                        </button>
+                        <button type="button" id="templateBtn" class="w-full sm:w-auto flex-1 bg-green-100 text-green-700 px-4 py-2 rounded-lg hover:bg-green-200 transition text-sm">
+                            <i class="fas fa-list-alt mr-1"></i> テンプレートから選択
+                        </button>
+                    </div>
+                    <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-lg transition font-semibold">
+                        <i class="fas fa-save mr-2"></i> この食事を記録する
+                    </button>
+                </form>
+                <div class="mt-8 border-t pt-6">
+                    <h3 class="text-lg font-semibold mb-2">今日の食事サマリー</h3>
+                    <p class="text-gray-600">総摂取カロリー: <span class="font-bold">1500 kcal</span> / 目標 1800 kcal</p>
+                    <p class="text-gray-600">PFCバランス: P:80g, F:50g, C:180g</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div class="flex justify-around items-center py-2">
+            <a href="ホーム画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span class="text-xs">ホーム</span>
+            </a>
+            <a href="進捗詳細画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-chart-line text-xl mb-1"></i>
+                <span class="text-xs">進捗</span>
+            </a>
+            <a href="記録選択画面.html" class="flex flex-col items-center py-2 px-3 text-blue-600">
+                <i class="fas fa-plus-circle text-xl mb-1"></i>
+                <span class="text-xs">記録</span>
+            </a>
+            <a href="アドバイス画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-lightbulb text-xl mb-1"></i>
+                <span class="text-xs">アドバイス</span>
+            </a>
+            <a href="設定画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-cog text-xl mb-1"></i>
+                <span class="text-xs">設定</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Quick Navigation Modal -->
+    <div id="quickNavModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">記録を追加</h3>
+                <button id="closeQuickNavModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <a href="体重記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <span class="text-sm font-medium">体重</span>
+                    </a>
+                    <a href="食事記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition bg-blue-50 border-blue-200">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <span class="text-sm font-medium">食事</span>
+                    </a>
+                    <a href="運動記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <span class="text-sm font-medium">運動</span>
+                    </a>
+                    <a href="運動メニュー提案画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <span class="text-sm font-medium">運動メニュー</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Menu Modal -->
+    <div id="myMenuModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-96 overflow-y-auto">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">マイメニュー</h3>
+                <button id="closeMyMenuModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="space-y-3">
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer menu-item" data-name="鶏むね肉ソテー" data-calories="200" data-protein="30" data-fat="8" data-carbs="2">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium">鶏むね肉ソテー</h4>
+                                <p class="text-sm text-gray-600">200kcal | P:30g F:8g C:2g</p>
+                            </div>
+                            <i class="fas fa-plus text-blue-500"></i>
+                        </div>
+                    </div>
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer menu-item" data-name="サラダ" data-calories="80" data-protein="5" data-fat="3" data-carbs="10">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium">サラダ</h4>
+                                <p class="text-sm text-gray-600">80kcal | P:5g F:3g C:10g</p>
+                            </div>
+                            <i class="fas fa-plus text-blue-500"></i>
+                        </div>
+                    </div>
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer menu-item" data-name="ヨーグルト" data-calories="120" data-protein="8" data-fat="5" data-carbs="15">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium">ヨーグルト</h4>
+                                <p class="text-sm text-gray-600">120kcal | P:8g F:5g C:15g</p>
+                            </div>
+                            <i class="fas fa-plus text-blue-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Modal -->
+    <div id="templateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-96 overflow-y-auto">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">テンプレート</h3>
+                <button id="closeTemplateModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="space-y-3">
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer template-item" data-name="朝食セット" data-calories="350" data-protein="25" data-fat="12" data-carbs="35">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium">朝食セット</h4>
+                                <p class="text-sm text-gray-600">350kcal | P:25g F:12g C:35g</p>
+                            </div>
+                            <i class="fas fa-plus text-green-500"></i>
+                        </div>
+                    </div>
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer template-item" data-name="昼食セット" data-calories="500" data-protein="35" data-fat="18" data-carbs="45">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium">昼食セット</h4>
+                                <p class="text-sm text-gray-600">500kcal | P:35g F:18g C:45g</p>
+                            </div>
+                            <i class="fas fa-plus text-green-500"></i>
+                        </div>
+                    </div>
+                    <div class="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer template-item" data-name="夕食セット" data-calories="400" data-protein="30" data-fat="15" data-carbs="30">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-medium">夕食セット</h4>
+                                <p class="text-sm text-gray-600">400kcal | P:30g F:15g C:30g</p>
+                            </div>
+                            <i class="fas fa-plus text-green-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Record navigation button
+        document.getElementById('recordNavBtn').addEventListener('click', function() {
+            document.getElementById('quickNavModal').classList.remove('hidden');
+        });
+        
+        // Quick navigation modal
+        document.getElementById('closeQuickNavModal').addEventListener('click', function() {
+            document.getElementById('quickNavModal').classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('quickNavModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // Record type buttons (now links)
+        document.querySelectorAll('.record-type-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // Let the link work naturally, just close the modal
+                document.getElementById('quickNavModal').classList.add('hidden');
+            });
+        });
+
+        // マイメニューボタンのイベント
+        document.getElementById('myMenuBtn').addEventListener('click', function() {
+            document.getElementById('myMenuModal').classList.remove('hidden');
+        });
+
+        // テンプレートボタンのイベント
+        document.getElementById('templateBtn').addEventListener('click', function() {
+            document.getElementById('templateModal').classList.remove('hidden');
+        });
+
+        // マイメニューモーダルを閉じる
+        document.getElementById('closeMyMenuModal').addEventListener('click', function() {
+            document.getElementById('myMenuModal').classList.add('hidden');
+        });
+
+        // テンプレートモーダルを閉じる
+        document.getElementById('closeTemplateModal').addEventListener('click', function() {
+            document.getElementById('templateModal').classList.add('hidden');
+        });
+
+        // マイメニューアイテムを選択
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const name = this.dataset.name;
+                const calories = this.dataset.calories;
+                const protein = this.dataset.protein;
+                const fat = this.dataset.fat;
+                const carbs = this.dataset.carbs;
+                
+                document.getElementById('foodName').value = name;
+                document.getElementById('calories').value = calories;
+                document.getElementById('protein').value = protein;
+                document.getElementById('fat').value = fat;
+                document.getElementById('carbs').value = carbs;
+                
+                document.getElementById('myMenuModal').classList.add('hidden');
+            });
+        });
+
+        // テンプレートアイテムを選択
+        document.querySelectorAll('.template-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const name = this.dataset.name;
+                const calories = this.dataset.calories;
+                const protein = this.dataset.protein;
+                const fat = this.dataset.fat;
+                const carbs = this.dataset.carbs;
+                
+                document.getElementById('foodName').value = name;
+                document.getElementById('calories').value = calories;
+                document.getElementById('protein').value = protein;
+                document.getElementById('fat').value = fat;
+                document.getElementById('carbs').value = carbs;
+                
+                document.getElementById('templateModal').classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

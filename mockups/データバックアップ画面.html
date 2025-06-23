@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>データバックアップ - ダイエット応援ノート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <a href="設定画面.html" class="text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-arrow-left mr-2"></i>戻る
+                </a>
+                <h1 class="text-xl font-bold">データバックアップ</h1>
+                <div class="w-8"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Backup Section -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">データのエクスポート</h2>
+                
+                <div class="space-y-4">
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mr-3">
+                                <i class="fas fa-download text-blue-500 text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-800 mb-1">データをエクスポート</h3>
+                                <p class="text-sm text-gray-600 mb-3">すべての記録データをJSONファイルとしてダウンロードできます。データのバックアップや他のデバイスへの移行に使用してください。</p>
+                                <div class="text-xs text-gray-500 space-y-1">
+                                    <div>• 体重記録、食事記録、運動記録</div>
+                                    <div>• 目標設定、進捗データ</div>
+                                    <div>• 設定情報、マイメニュー</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button id="exportData" class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition font-semibold">
+                            <i class="fas fa-download mr-2"></i>エクスポート
+                        </button>
+                        <button id="previewData" class="flex-1 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 transition font-semibold">
+                            <i class="fas fa-eye mr-2"></i>プレビュー
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Restore Section -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">データのインポート</h2>
+                
+                <div class="space-y-4">
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mr-3">
+                                <i class="fas fa-upload text-green-500 text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-800 mb-1">データをインポート</h3>
+                                <p class="text-sm text-gray-600 mb-3">バックアップしたJSONファイルをアップロードして、データを復元できます。</p>
+                                <div class="text-xs text-gray-500 space-y-1">
+                                    <div>⚠️ 注意：既存のデータは上書きされます</div>
+                                    <div>• ファイル形式：JSON</div>
+                                    <div>• 最大サイズ：10MB</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition">
+                        <input type="file" id="importFile" accept=".json" class="hidden">
+                        <label for="importFile" class="cursor-pointer">
+                            <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-cloud-upload-alt text-gray-400 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">ファイルを選択</h3>
+                            <p class="text-gray-600 mb-4">または、ここにファイルをドラッグ&ドロップ</p>
+                            <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+                                ファイルを選択
+                            </button>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Backup History -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">バックアップ履歴</h2>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                                <i class="fas fa-file-archive"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">backup_2024_03_10.json</p>
+                                <p class="text-sm text-gray-600">2.3MB • 記録数: 156件</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500">2024/03/10 15:30</p>
+                            <button class="text-xs text-blue-600 hover:text-blue-800">復元</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                                <i class="fas fa-file-archive"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">backup_2024_03_05.json</p>
+                                <p class="text-sm text-gray-600">2.1MB • 記録数: 142件</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500">2024/03/05 10:15</p>
+                            <button class="text-xs text-blue-600 hover:text-blue-800">復元</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Auto Backup Settings -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">自動バックアップ設定</h2>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium">自動バックアップ</h3>
+                            <p class="text-sm text-gray-600">定期的にデータを自動バックアップします</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="autoBackup" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium">バックアップ頻度</h3>
+                            <p class="text-sm text-gray-600">バックアップの実行間隔を設定</p>
+                        </div>
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="daily">毎日</option>
+                            <option value="weekly" selected>毎週</option>
+                            <option value="monthly">毎月</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium">保持期間</h3>
+                            <p class="text-sm text-gray-600">バックアップファイルの保存期間</p>
+                        </div>
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="1month">1ヶ月</option>
+                            <option value="3months" selected>3ヶ月</option>
+                            <option value="6months">6ヶ月</option>
+                            <option value="1year">1年</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-96 overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">データプレビュー</h3>
+                    <button id="closePreviewModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <pre id="previewContent" class="text-sm text-gray-700 whitespace-pre-wrap"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center mr-4">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold">データの上書き確認</h3>
+                        <p class="text-sm text-gray-600">既存のデータが上書きされます。続行しますか？</p>
+                    </div>
+                </div>
+                <div class="flex space-x-4">
+                    <button id="cancelImport" class="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition">
+                        キャンセル
+                    </button>
+                    <button id="confirmImport" class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition">
+                        上書きする
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // エクスポート機能
+        document.getElementById('exportData').addEventListener('click', function() {
+            // サンプルデータ（実際のアプリではローカルストレージから取得）
+            const sampleData = {
+                user: {
+                    username: "demo_user",
+                    nickname: "デモユーザー",
+                    profile: {
+                        age: 25,
+                        gender: "female",
+                        height: 160,
+                        currentWeight: 65.2,
+                        targetWeight: 60.0
+                    }
+                },
+                records: {
+                    weight: [
+                        { date: "2024-03-10", weight: 65.2, bodyFat: 22.5 },
+                        { date: "2024-03-09", weight: 65.5, bodyFat: 22.8 }
+                    ],
+                    meals: [
+                        { date: "2024-03-10", type: "breakfast", calories: 350, protein: 25, fat: 12, carbs: 35 }
+                    ],
+                    exercises: [
+                        { date: "2024-03-10", type: "walking", duration: 30, calories: 150 }
+                    ]
+                },
+                goals: {
+                    targetWeight: 60.0,
+                    targetDate: "2024-06-30",
+                    purposes: ["weight_loss", "health"]
+                },
+                settings: {
+                    reminders: {
+                        weight: { enabled: true, time: "07:00" },
+                        meals: { enabled: true, times: ["08:00", "12:00", "18:00"] },
+                        exercise: { enabled: true, time: "19:00" }
+                    }
+                }
+            };
+
+            // JSONファイルとしてダウンロード
+            const dataStr = JSON.stringify(sampleData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `diet_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showMessage('データのエクスポートが完了しました', 'success');
+        });
+
+        // プレビュー機能
+        document.getElementById('previewData').addEventListener('click', function() {
+            const sampleData = {
+                user: { username: "demo_user", nickname: "デモユーザー" },
+                records: { weight: 2, meals: 1, exercises: 1 },
+                goals: { targetWeight: 60.0, targetDate: "2024-06-30" }
+            };
+            
+            document.getElementById('previewContent').textContent = JSON.stringify(sampleData, null, 2);
+            document.getElementById('previewModal').classList.remove('hidden');
+        });
+
+        // ファイルインポート
+        document.getElementById('importFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 10 * 1024 * 1024) { // 10MB制限
+                    showMessage('ファイルサイズが大きすぎます（最大10MB）', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        // データの妥当性チェック
+                        if (data.user && data.records) {
+                            document.getElementById('confirmModal').classList.remove('hidden');
+                        } else {
+                            showMessage('無効なファイル形式です', 'error');
+                        }
+                    } catch (error) {
+                        showMessage('ファイルの読み込みに失敗しました', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // モーダルを閉じる
+        document.getElementById('closePreviewModal').addEventListener('click', function() {
+            document.getElementById('previewModal').classList.add('hidden');
+        });
+
+        document.getElementById('cancelImport').addEventListener('click', function() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('importFile').value = '';
+        });
+
+        document.getElementById('confirmImport').addEventListener('click', function() {
+            // 実際のインポート処理
+            showMessage('データのインポートが完了しました', 'success');
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('importFile').value = '';
+        });
+
+        // メッセージ表示関数
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm ${
+                type === 'error' ? 'bg-red-500 text-white' :
+                type === 'success' ? 'bg-green-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            messageDiv.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        // ドラッグ&ドロップ機能
+        const dropZone = document.querySelector('.border-dashed');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('border-blue-400', 'bg-blue-50');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('border-blue-400', 'bg-blue-50');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                document.getElementById('importFile').files = files;
+                document.getElementById('importFile').dispatchEvent(new Event('change'));
+            }
+        }
+    </script>
+</body>
+</html> 

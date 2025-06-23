@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体重記録 - ダイエット応援ノート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f8fafc; }
+        .gradient-bg { background: linear-gradient(135deg, #f9a8d4 0%, #93c5fd 100%); }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-input { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); transition: border-color 0.2s; }
+        .form-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #4b5563; }
+    </style>
+</head>
+<body class="text-gray-800 pb-20">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <button onclick="history.back()" class="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 class="text-xl font-bold">体重記録</h1>
+            </div>
+            <div class="w-8 h-8"></div> <!-- Spacer for centering -->
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- 今日の記録 -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">今日の記録</h2>
+                
+                <form id="weightForm" class="space-y-6">
+                    <div>
+                        <label for="weight" class="block text-sm font-medium text-gray-700 mb-2">体重 (kg)</label>
+                        <input type="number" id="weight" name="weight" step="0.1" min="30" max="200" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                               placeholder="例: 65.5" required>
+                    </div>
+                    
+                    <div>
+                        <label for="bodyFat" class="block text-sm font-medium text-gray-700 mb-2">体脂肪率 (%) <span class="text-gray-500">任意</span></label>
+                        <input type="number" id="bodyFat" name="bodyFat" step="0.1" min="5" max="50" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="例: 20.5">
+                    </div>
+
+                    <div>
+                        <label for="waist" class="block text-sm font-medium text-gray-700 mb-2">ウエスト (cm) <span class="text-gray-500">任意</span></label>
+                        <input type="number" id="waist" name="waist" step="0.1" min="50" max="150" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="例: 75.0">
+                    </div>
+
+                    <div>
+                        <label for="mood" class="block text-sm font-medium text-gray-700 mb-2">今日の気分 <span class="text-gray-500">任意</span></label>
+                        <select id="mood" name="mood" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">選択してください</option>
+                            <option value="excellent">😊 とても良い</option>
+                            <option value="good">🙂 良い</option>
+                            <option value="normal">😐 普通</option>
+                            <option value="bad">😔 悪い</option>
+                            <option value="terrible">😢 とても悪い</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="sleep" class="block text-sm font-medium text-gray-700 mb-2">睡眠時間 (時間) <span class="text-gray-500">任意</span></label>
+                        <input type="number" id="sleep" name="sleep" step="0.5" min="0" max="24" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="例: 7.5">
+                    </div>
+
+                    <div>
+                        <label for="condition" class="block text-sm font-medium text-gray-700 mb-2">体調 <span class="text-gray-500">任意</span></label>
+                        <select id="condition" name="condition" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">選択してください</option>
+                            <option value="excellent">🌟 とても良い</option>
+                            <option value="good">👍 良い</option>
+                            <option value="normal">➖ 普通</option>
+                            <option value="bad">👎 悪い</option>
+                            <option value="terrible">💀 とても悪い</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="memo" class="block text-sm font-medium text-gray-700 mb-2">メモ <span class="text-gray-500">任意</span></label>
+                        <textarea id="memo" name="memo" rows="3" 
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="今日の感想や気づいたことを記録しましょう"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition font-semibold">
+                        記録を保存
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 変化の問いかけ -->
+        <section class="mb-8 fade-in">
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold mb-4">最近の変化を感じますか？</h2>
+                <p class="text-gray-700 mb-4">ダイエットを続ける中で、どんな変化を感じていますか？</p>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                        <input type="radio" id="change1" name="changes" value="clothes" class="mr-3">
+                        <label for="change1" class="flex-1 cursor-pointer">
+                            <span class="font-medium">服がゆるくなった</span>
+                        </label>
+                    </div>
+                    <div class="flex items-center p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                        <input type="radio" id="change2" name="changes" value="energy" class="mr-3">
+                        <label for="change2" class="flex-1 cursor-pointer">
+                            <span class="font-medium">体力がついてきた</span>
+                        </label>
+                    </div>
+                    <div class="flex items-center p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                        <input type="radio" id="change3" name="changes" value="appetite" class="mr-3">
+                        <label for="change3" class="flex-1 cursor-pointer">
+                            <span class="font-medium">食欲がコントロールできるようになった</span>
+                        </label>
+                    </div>
+                    <div class="flex items-center p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                        <input type="radio" id="change4" name="changes" value="confidence" class="mr-3">
+                        <label for="change4" class="flex-1 cursor-pointer">
+                            <span class="font-medium">自信がついてきた</span>
+                        </label>
+                    </div>
+                    <div class="flex items-center p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                        <input type="radio" id="change5" name="changes" value="none" class="mr-3">
+                        <label for="change5" class="flex-1 cursor-pointer">
+                            <span class="font-medium">まだ変化は感じない</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button id="saveChanges" class="w-full mt-4 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition">
+                    変化を記録
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div class="flex justify-around items-center py-2">
+            <a href="ホーム画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span class="text-xs">ホーム</span>
+            </a>
+            <a href="進捗詳細画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-chart-line text-xl mb-1"></i>
+                <span class="text-xs">進捗</span>
+            </a>
+            <a href="記録選択画面.html" class="flex flex-col items-center py-2 px-3 text-blue-600">
+                <i class="fas fa-plus-circle text-xl mb-1"></i>
+                <span class="text-xs">記録</span>
+            </a>
+            <a href="アドバイス画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-lightbulb text-xl mb-1"></i>
+                <span class="text-xs">アドバイス</span>
+            </a>
+            <a href="設定画面.html" class="flex flex-col items-center py-2 px-3 text-gray-500 hover:text-blue-600 transition">
+                <i class="fas fa-cog text-xl mb-1"></i>
+                <span class="text-xs">設定</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Quick Navigation Modal -->
+    <div id="quickNavModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold">記録を追加</h3>
+                <button id="closeQuickNavModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <a href="体重記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition bg-blue-50 border-blue-200">
+                        <div class="w-12 h-12 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <span class="text-sm font-medium">体重</span>
+                    </a>
+                    <a href="食事記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <span class="text-sm font-medium">食事</span>
+                    </a>
+                    <a href="運動記録画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <span class="text-sm font-medium">運動</span>
+                    </a>
+                    <a href="運動メニュー提案画面.html" class="record-type-btn flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-2">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <span class="text-sm font-medium">運動メニュー</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Record navigation button
+        document.getElementById('recordNavBtn').addEventListener('click', function() {
+            document.getElementById('quickNavModal').classList.remove('hidden');
+        });
+        
+        // Quick navigation modal
+        document.getElementById('closeQuickNavModal').addEventListener('click', function() {
+            document.getElementById('quickNavModal').classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('quickNavModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+        
+        // Record type buttons (now links)
+        document.querySelectorAll('.record-type-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // Let the link work naturally, just close the modal
+                document.getElementById('quickNavModal').classList.add('hidden');
+            });
+        });
+
+        // 変化記録の保存
+        document.getElementById('saveChanges').addEventListener('click', function() {
+            const selectedChange = document.querySelector('input[name="changes"]:checked');
+            if (selectedChange) {
+                // 成功メッセージを表示
+                showMessage('変化を記録しました！継続は力なりです。', 'success');
+                
+                // 選択をリセット
+                selectedChange.checked = false;
+            } else {
+                showMessage('変化を選択してください。', 'error');
+            }
+        });
+
+        // 体重記録フォームの送信
+        document.getElementById('weightForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const weight = document.getElementById('weight').value;
+            if (weight) {
+                // 成功メッセージを表示
+                showMessage('体重を記録しました！', 'success');
+                
+                // フォームをリセット
+                this.reset();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リマインダー設定 - ダイエット応援ノート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <a href="設定画面.html" class="mr-4 text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </a>
+                    <h1 class="text-xl font-bold">リマインダー設定</h1>
+                </div>
+                <button id="saveReminders" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    保存
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6 pb-24">
+        <!-- General Settings -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-lg font-bold mb-6">基本設定</h2>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium text-gray-800">リマインダー全体</h3>
+                            <p class="text-sm text-gray-600">すべてのリマインダーを有効/無効にする</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="globalReminders" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium text-gray-800">通知音</h3>
+                            <p class="text-sm text-gray-600">リマインダー時の通知音を再生する</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="notificationSound" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium text-gray-800">バイブレーション</h3>
+                            <p class="text-sm text-gray-600">リマインダー時にバイブレーションを発生させる</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="vibration" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Weight Reminder -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <h2 class="text-lg font-bold">体重記録リマインダー</h2>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="weightReminder" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">通知時間</label>
+                        <input type="time" id="weightTime" value="07:00" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">頻度</label>
+                        <select id="weightFrequency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="daily">毎日</option>
+                            <option value="weekly">週1回</option>
+                            <option value="twice_week">週2回</option>
+                            <option value="custom">カスタム</option>
+                        </select>
+                    </div>
+
+                    <div id="weightCustomDays" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">曜日選択</label>
+                        <div class="grid grid-cols-7 gap-2">
+                            <label class="flex items-center justify-center">
+                                <input type="checkbox" value="mon" class="mr-1">
+                                <span class="text-sm">月</span>
+                            </label>
+                            <label class="flex items-center justify-center">
+                                <input type="checkbox" value="tue" class="mr-1">
+                                <span class="text-sm">火</span>
+                            </label>
+                            <label class="flex items-center justify-center">
+                                <input type="checkbox" value="wed" class="mr-1">
+                                <span class="text-sm">水</span>
+                            </label>
+                            <label class="flex items-center justify-center">
+                                <input type="checkbox" value="thu" class="mr-1">
+                                <span class="text-sm">木</span>
+                            </label>
+                            <label class="flex items-center justify-center">
+                                <input type="checkbox" value="fri" class="mr-1">
+                                <span class="text-sm">金</span>
+                            </label>
+                            <label class="flex items-center justify-center">
+                                <input type="checkbox" value="sat" class="mr-1">
+                                <span class="text-sm">土</span>
+                            </label>
+                            <label class="flex items-center justify-center">
+                                <input type="checkbox" value="sun" class="mr-1">
+                                <span class="text-sm">日</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">メッセージ</label>
+                        <input type="text" id="weightMessage" value="体重を記録しましょう！" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="カスタムメッセージを入力">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Meal Reminder -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h2 class="text-lg font-bold">食事記録リマインダー</h2>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="mealReminder" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">朝食</label>
+                            <input type="time" id="breakfastTime" value="08:00" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">昼食</label>
+                            <input type="time" id="lunchTime" value="12:00" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">夕食</label>
+                            <input type="time" id="dinnerTime" value="19:00" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">メッセージ</label>
+                        <input type="text" id="mealMessage" value="食事を記録しましょう！" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="カスタムメッセージを入力">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercise Reminder -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-running"></i>
+                        </div>
+                        <h2 class="text-lg font-bold">運動記録リマインダー</h2>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="exerciseReminder" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">通知時間</label>
+                        <input type="time" id="exerciseTime" value="18:00" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">頻度</label>
+                        <select id="exerciseFrequency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="daily">毎日</option>
+                            <option value="weekdays">平日のみ</option>
+                            <option value="weekends">週末のみ</option>
+                            <option value="custom">カスタム</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">メッセージ</label>
+                        <input type="text" id="exerciseMessage" value="運動の時間です！" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="カスタムメッセージを入力">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Goal Reminder -->
+        <section class="mb-8 fade-in">
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mr-3">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h2 class="text-lg font-bold">目標達成リマインダー</h2>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="goalReminder" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">通知タイミング</label>
+                        <select id="goalReminderType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="weekly">週1回（日曜日）</option>
+                            <option value="monthly">月1回（月初）</option>
+                            <option value="milestone">マイルストーン達成時</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">メッセージ</label>
+                        <input type="text" id="goalMessage" value="目標達成に向けて頑張りましょう！" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="カスタムメッセージを入力">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">設定完了</h3>
+                <p class="text-gray-600 mb-6">リマインダー設定が保存されました</p>
+                <button id="closeSuccessModal" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                    閉じる
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 頻度選択時のカスタム曜日表示
+        document.getElementById('weightFrequency').addEventListener('change', function() {
+            const customDays = document.getElementById('weightCustomDays');
+            if (this.value === 'custom') {
+                customDays.classList.remove('hidden');
+            } else {
+                customDays.classList.add('hidden');
+            }
+        });
+
+        // 保存ボタン
+        document.getElementById('saveReminders').addEventListener('click', function() {
+            // 設定を保存する処理をシミュレート
+            setTimeout(() => {
+                document.getElementById('successModal').classList.remove('hidden');
+            }, 500);
+        });
+
+        // 成功モーダルを閉じる
+        document.getElementById('closeSuccessModal').addEventListener('click', function() {
+            document.getElementById('successModal').classList.add('hidden');
+        });
+
+        // モーダル外クリックで閉じる
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+
+        // 全体リマインダーの切り替え
+        document.getElementById('globalReminders').addEventListener('change', function() {
+            const reminders = ['weightReminder', 'mealReminder', 'exerciseReminder', 'goalReminder'];
+            reminders.forEach(id => {
+                const checkbox = document.getElementById(id);
+                checkbox.checked = this.checked;
+                checkbox.disabled = !this.checked;
+            });
+        });
+    </script>
+</body>
+</html> 
