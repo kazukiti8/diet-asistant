@@ -1,11 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { AuthService, DatabaseService, auth } from '@/services/firebase'
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth'
 
 export const useAuthStore = defineStore('auth', () => {
   // 状態
   const user = ref(null)
   const token = ref(localStorage.getItem('token') || null)
   const isAuthenticated = ref(false)
+  const isLoading = ref(false)
 
   // ゲッター
   const isLoggedIn = computed(() => isAuthenticated.value && user.value !== null)
@@ -14,140 +17,145 @@ export const useAuthStore = defineStore('auth', () => {
   // アクション
   const login = async (credentials) => {
     try {
-      // 実際のAPI呼び出しをここに実装
-      const response = await mockLoginAPI(credentials)
+      isLoading.value = true
+      const result = await AuthService.login(credentials.email, credentials.password)
       
-      user.value = response.user
-      token.value = response.token
-      isAuthenticated.value = true
-      
-      localStorage.setItem('token', response.token)
-      localStorage.setItem('user', JSON.stringify(response.user))
-      
-      return { success: true }
+      if (result.success) {
+        user.value = result.user
+        token.value = await result.user.getIdToken()
+        isAuthenticated.value = true
+        
+        localStorage.setItem('token', token.value)
+        localStorage.setItem('user', JSON.stringify(result.user))
+        
+        return { success: true }
+      } else {
+        return { success: false, error: result.error }
+      }
     } catch (error) {
       console.error('ログインエラー:', error)
       return { success: false, error: error.message }
+    } finally {
+      isLoading.value = false
     }
   }
 
   const register = async (userData) => {
     try {
-      // 実際のAPI呼び出しをここに実装
-      const response = await mockRegisterAPI(userData)
+      isLoading.value = true
+      const result = await AuthService.register(userData.email, userData.password, {
+        username: userData.username,
+        email: userData.email,
+        nickname: userData.nickname || userData.username
+      })
       
-      user.value = response.user
-      token.value = response.token
-      isAuthenticated.value = true
+      if (result.success) {
+        user.value = result.user
+        token.value = await result.user.getIdToken()
+        isAuthenticated.value = true
+        
+        localStorage.setItem('token', token.value)
+        localStorage.setItem('user', JSON.stringify(result.user))
+        
+        return { success: true }
+      } else {
+        return { success: false, error: result.error }
+      }
+    } catch (error) {
+      console.error('登録エラー:', error)
+      return { success: false, error: error.message }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const logout = async () => {
+    try {
+      await AuthService.logout()
+      user.value = null
+      token.value = null
+      isAuthenticated.value = false
       
-      localStorage.setItem('token', response.token)
-      localStorage.setItem('user', JSON.stringify(response.user))
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
       
       return { success: true }
     } catch (error) {
-      console.error('登録エラー:', error)
+      console.error('ログアウトエラー:', error)
       return { success: false, error: error.message }
     }
   }
 
-  const logout = () => {
-    user.value = null
-    token.value = null
-    isAuthenticated.value = false
-    
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-  }
-
   const checkAuth = async () => {
-    const storedToken = localStorage.getItem('token')
-    const storedUser = localStorage.getItem('user')
-    
-    if (storedToken && storedUser) {
-      try {
-        // 実際のAPI呼び出しでトークンの有効性を確認
-        const response = await mockValidateTokenAPI(storedToken)
-        
-        if (response.valid) {
-          user.value = JSON.parse(storedUser)
-          token.value = storedToken
-          isAuthenticated.value = true
-        } else {
-          logout()
-        }
-      } catch (error) {
-        console.error('認証確認エラー:', error)
-        logout()
+    try {
+      const storedToken = localStorage.getItem('token')
+      const storedUser = localStorage.getItem('user')
+      
+      if (storedToken && storedUser) {
+        // Firebaseの認証状態を確認
+        return new Promise((resolve) => {
+          AuthService.onAuthStateChanged((firebaseUser) => {
+            if (firebaseUser) {
+              user.value = firebaseUser
+              token.value = storedToken
+              isAuthenticated.value = true
+              resolve({ success: true })
+            } else {
+              logout()
+              resolve({ success: false })
+            }
+          })
+        })
+      } else {
+        return { success: false }
       }
+    } catch (error) {
+      console.error('認証確認エラー:', error)
+      logout()
+      return { success: false, error: error.message }
     }
   }
 
   const updateProfile = async (profileData) => {
     try {
-      // 実際のAPI呼び出しをここに実装
-      const response = await mockUpdateProfileAPI(profileData)
+      if (!user.value) {
+        throw new Error('ユーザーが認証されていません')
+      }
       
-      user.value = { ...user.value, ...response.user }
-      localStorage.setItem('user', JSON.stringify(user.value))
+      const result = await DatabaseService.updateUser(user.value.uid, profileData)
       
-      return { success: true }
+      if (result.success) {
+        user.value = { ...user.value, ...profileData }
+        localStorage.setItem('user', JSON.stringify(user.value))
+        return { success: true }
+      } else {
+        return { success: false, error: result.error }
+      }
     } catch (error) {
       console.error('プロフィール更新エラー:', error)
       return { success: false, error: error.message }
     }
   }
 
-  // モックAPI関数（実際の開発では削除）
-  const mockLoginAPI = async (credentials) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          user: {
-            id: 1,
-            username: credentials.username,
-            email: 'user@example.com',
-            nickname: 'ダイエット頑張る',
-            createdAt: new Date().toISOString()
-          },
-          token: 'mock-jwt-token'
-        })
-      }, 1000)
-    })
-  }
-
-  const mockRegisterAPI = async (userData) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          user: {
-            id: 1,
-            username: userData.username,
-            email: userData.email,
-            nickname: userData.nickname || userData.username,
-            createdAt: new Date().toISOString()
-          },
-          token: 'mock-jwt-token'
-        })
-      }, 1000)
-    })
-  }
-
-  const mockValidateTokenAPI = async (token) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ valid: true })
-      }, 500)
-    })
-  }
-
-  const mockUpdateProfileAPI = async (profileData) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          user: profileData
-        })
-      }, 1000)
-    })
+  const changePassword = async (currentPassword, newPassword) => {
+    try {
+      // Firebaseのパスワード変更機能を使用
+      // 注意: 現在のパスワードの確認が必要
+      const currentUser = auth.currentUser
+      if (!currentUser) {
+        throw new Error('ユーザーが認証されていません')
+      }
+      
+      const credential = EmailAuthProvider.credential(currentUser.email, currentPassword)
+      
+      await reauthenticateWithCredential(currentUser, credential)
+      await updatePassword(currentUser, newPassword)
+      
+      return { success: true }
+    } catch (error) {
+      console.error('パスワード変更エラー:', error)
+      return { success: false, error: error.message }
+    }
   }
 
   return {
@@ -155,6 +163,7 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     token,
     isAuthenticated,
+    isLoading,
     
     // ゲッター
     isLoggedIn,
@@ -165,6 +174,7 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     logout,
     checkAuth,
-    updateProfile
+    updateProfile,
+    changePassword
   }
 }) 

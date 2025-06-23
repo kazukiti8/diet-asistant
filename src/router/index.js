@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 
 // ビューコンポーネントのインポート
 import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
 import HomeView from '@/views/HomeView.vue'
 import RecordsView from '@/views/RecordsView.vue'
 import WeightRecordView from '@/views/WeightRecordView.vue'
@@ -17,6 +18,12 @@ const routes = [
     path: '/login',
     name: 'login',
     component: LoginView,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterView,
     meta: { requiresAuth: false }
   },
   {
