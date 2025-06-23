@@ -546,6 +546,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useExerciseStore } from '@/stores/exercise'
 import BottomNavigation from '@/components/BottomNavigation.vue'
 
@@ -800,8 +801,21 @@ const loadData = async () => {
   }
 }
 
+const route = useRoute()
+
+// onMountedの中でクエリパラメータをチェック
 onMounted(() => {
   loadData()
+
+  // メニュー自動開始機能
+  const { menuId, autoStart } = route.query
+  if (menuId && autoStart === 'true') {
+    // メニューIDで該当メニューを検索
+    const menu = exerciseMenus.value.find(m => m.id === menuId)
+    if (menu) {
+      useExerciseMenu(menu)
+    }
+  }
 })
 </script>
 
