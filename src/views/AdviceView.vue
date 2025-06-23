@@ -782,7 +782,7 @@ onMounted(async () => {
   try {
     isLoading.value = true
     await Promise.all([
-      weightStore.loadData(),
+      weightStore.loadRecords(),
       mealStore.loadData(),
       exerciseStore.loadData()
     ])
