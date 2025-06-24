@@ -1,4 +1,4 @@
-const CACHE_NAME = 'diet-assistant-v1.0.0'
+const CACHE_NAME = 'diet-assistant-v1.0.1'
 const urlsToCache = [
   '/',
   '/index.html',
@@ -75,8 +75,8 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data ? event.data.text() : '新しい通知があります',
-    icon: '/icon-192x192.png',
-    badge: '/icon-192x192.png',
+    icon: '/icons/icon.svg',
+    badge: '/icons/icon.svg',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -86,12 +86,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'explore',
         title: 'アプリを開く',
-        icon: '/icon-192x192.png'
+        icon: '/icons/icon.svg'
       },
       {
         action: 'close',
         title: '閉じる',
-        icon: '/icon-192x192.png'
+        icon: '/icons/icon.svg'
       }
     ]
   }

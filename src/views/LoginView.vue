@@ -124,7 +124,13 @@ const handleLogin = async () => {
 
     if (result.success) {
       window.$notify?.success('ログイン成功', 'おかえりなさい！')
-      router.push('/')
+      
+      // オンボーディングが必要かチェック
+      if (authStore.needsOnboarding) {
+        router.push('/onboarding')
+      } else {
+        router.push('/')
+      }
     } else {
       error.value = result.error || 'ログインに失敗しました'
     }

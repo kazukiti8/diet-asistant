@@ -3,10 +3,37 @@ export class PWAManager {
   constructor() {
     this.isSupported = 'serviceWorker' in navigator
     this.registration = null
+    // 開発環境の判定を修正
+    this.isDevelopment = this.checkIfDevelopment()
+  }
+
+  // 開発環境かどうかを判定
+  checkIfDevelopment() {
+    try {
+      // Vite環境変数が利用可能な場合
+      if (typeof import.meta !== 'undefined' && import.meta.env) {
+        return import.meta.env.DEV === true
+      }
+      // Node.js環境変数が利用可能な場合
+      if (typeof process !== 'undefined' && process.env) {
+        return process.env.NODE_ENV === 'development'
+      }
+      // デフォルトは開発環境とみなす
+      return true
+    } catch (error) {
+      console.warn('開発環境の判定に失敗しました:', error)
+      return true
+    }
   }
 
   // Service Workerの登録
   async registerServiceWorker() {
+    // 開発環境ではService Workerを登録しない
+    if (this.isDevelopment) {
+      console.log('開発環境のため、Service Workerの登録をスキップします')
+      return false
+    }
+
     if (!this.isSupported) {
       console.log('Service Workerはサポートされていません')
       return false

@@ -9,7 +9,7 @@
     <!-- PWA対応 -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#2196f3" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="ダイエット応援ノート" />
     
@@ -22,9 +22,14 @@
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
     
-    <!-- Service Worker登録 -->
+    <!-- Service Worker登録（本番環境のみ） -->
     <script>
-      if ('serviceWorker' in navigator) {
+      // 開発環境かどうかを判定
+      const isDevelopment = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.port === '3000'
+      
+      if ('serviceWorker' in navigator && !isDevelopment) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
             .then(registration => {

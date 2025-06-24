@@ -77,17 +77,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Demo Login -->
-        <section class="max-w-md mx-auto mt-6 fade-in">
-            <div class="bg-gray-50 rounded-xl p-6 text-center">
-                <h3 class="text-lg font-semibold mb-3">デモアカウントでお試し</h3>
-                <p class="text-sm text-gray-600 mb-4">機能をお試しいただくためのデモアカウントです</p>
-                <button id="demoLogin" class="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition font-semibold">
-                    <i class="fas fa-play mr-2"></i>デモでログイン
-                </button>
-            </div>
-        </section>
     </main>
 
     <!-- Error Message Modal -->
@@ -139,19 +128,8 @@
                 return;
             }
             
-            // デモ用の簡単な認証
-            if (username === 'demo' && password === 'demo123') {
-                // 成功時はホーム画面に遷移
-                window.location.href = 'ホーム画面.html';
-            } else {
-                showError('ユーザー名またはパスワードが正しくありません');
-            }
-        });
-
-        // デモログイン
-        document.getElementById('demoLogin').addEventListener('click', function() {
-            // デモアカウントで自動ログイン
-            window.location.href = 'ホーム画面.html';
+            // 実際のアプリケーションでは、ここでサーバーに認証リクエストを送信
+            showError('ログイン機能は実装中です');
         });
 
         // エラーモーダルを閉じる

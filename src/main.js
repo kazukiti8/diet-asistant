@@ -10,4 +10,5 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
+// アプリケーションをマウント
 app.mount('#app') 

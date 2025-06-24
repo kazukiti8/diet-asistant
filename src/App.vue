@@ -52,8 +52,10 @@ let deferredPrompt = null
 
 onMounted(async () => {
   try {
-    // 認証状態の確認
-    await authStore.checkAuth()
+    // 認証状態の確認（一度だけ実行）
+    const authResult = await authStore.checkAuth()
+    console.log('認証状態確認結果:', authResult)
+    
     // 初期化処理
     await initializeApp()
   } catch (error) {
@@ -95,6 +97,33 @@ const installApp = async () => {
 const initializeApp = async () => {
   // アプリケーションの初期化処理
   // 例: ユーザー設定の読み込み、データの初期化など
+  
+  // 開発環境ではPWA機能を初期化しない
+  const isDevelopment = (() => {
+    try {
+      // Vite環境変数が利用可能な場合
+      if (typeof import.meta !== 'undefined' && import.meta.env) {
+        return import.meta.env.DEV === true
+      }
+      // Node.js環境変数が利用可能な場合
+      if (typeof process !== 'undefined' && process.env) {
+        return process.env.NODE_ENV === 'development'
+      }
+      // デフォルトは開発環境とみなす
+      return true
+    } catch (error) {
+      console.warn('開発環境の判定に失敗しました:', error)
+      return true
+    }
+  })()
+  
+  if (!isDevelopment) {
+    try {
+      await pwaManager.registerServiceWorker()
+    } catch (error) {
+      console.error('PWA初期化エラー:', error)
+    }
+  }
 }
 </script>
 

@@ -4,10 +4,21 @@ import { useAuthStore } from '@/stores/auth'
 // ビューコンポーネントのインポート
 import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
+import OnboardingView from '@/views/OnboardingView.vue'
 import HomeView from '@/views/HomeView.vue'
 import RecordsView from '@/views/RecordsView.vue'
 import WeightRecordView from '@/views/WeightRecordView.vue'
 import MealRecordView from '@/views/MealRecordView.vue'
+import ExerciseRecordView from '@/views/ExerciseRecordView.vue'
+import ExerciseMenuView from '@/views/ExerciseMenuView.vue'
+import ProgressView from '@/views/ProgressView.vue'
+import AdviceView from '@/views/AdviceView.vue'
+import SettingsView from '@/views/SettingsView.vue'
+import ProfileEditView from '@/views/ProfileEditView.vue'
+import GoalSettingView from '@/views/GoalSettingView.vue'
+import ReminderSettingView from '@/views/ReminderSettingView.vue'
+import NotificationSettingView from '@/views/NotificationSettingView.vue'
+import DataBackupView from '@/views/DataBackupView.vue'
 
 const routes = [
   {
@@ -27,89 +38,94 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
+    path: '/onboarding',
+    name: 'onboarding',
+    component: OnboardingView,
+    meta: { requiresAuth: true, requiresOnboarding: true }
+  },
+  {
     path: '/home',
     name: 'home',
     component: HomeView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/records',
     name: 'records',
     component: RecordsView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/weight-record',
     name: 'weight-record',
     component: WeightRecordView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/meal-record',
     name: 'meal-record',
     component: MealRecordView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
-  // プレースホルダールート（後で実装予定）
   {
     path: '/exercise-record',
     name: 'exercise-record',
-    component: () => import('@/views/ExerciseRecordView.vue'),
-    meta: { requiresAuth: true }
+    component: ExerciseRecordView,
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/exercise-menu',
     name: 'exercise-menu',
-    component: () => import('@/views/ExerciseMenuView.vue'),
-    meta: { requiresAuth: true }
+    component: ExerciseMenuView,
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/progress',
     name: 'progress',
-    component: () => import('@/views/ProgressView.vue'),
-    meta: { requiresAuth: true }
+    component: ProgressView,
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/advice',
     name: 'advice',
-    component: () => import('@/views/AdviceView.vue'),
-    meta: { requiresAuth: true }
+    component: AdviceView,
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/settings',
     name: 'settings',
-    component: () => import('@/views/SettingsView.vue'),
-    meta: { requiresAuth: true }
+    component: SettingsView,
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/profile-edit',
     name: 'profile-edit',
-    component: () => import('@/views/ProfileEditView.vue'),
-    meta: { requiresAuth: true }
+    component: ProfileEditView,
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/goal-setting',
     name: 'goal-setting',
-    component: () => import('@/views/GoalSettingView.vue'),
-    meta: { requiresAuth: true }
+    component: GoalSettingView,
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/reminder-setting',
     name: 'reminder-setting',
-    component: () => import('@/views/ReminderSettingView.vue'),
-    meta: { requiresAuth: true }
+    component: ReminderSettingView,
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/notification-setting',
     name: 'notification-setting',
-    component: () => import('@/views/NotificationSettingView.vue'),
-    meta: { requiresAuth: true }
+    component: NotificationSettingView,
+    meta: { requiresAuth: true, requiresOnboarding: false }
   },
   {
     path: '/data-backup',
     name: 'data-backup',
-    component: () => import('@/views/DataBackupView.vue'),
-    meta: { requiresAuth: true }
+    component: DataBackupView,
+    meta: { requiresAuth: true, requiresOnboarding: false }
   }
 ]
 
@@ -119,16 +135,59 @@ const router = createRouter({
 })
 
 // ナビゲーションガード
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/login')
-  } else if (to.path === '/login' && authStore.isAuthenticated) {
-    next('/home')
-  } else {
-    next()
+  console.log('ナビゲーションガード:', { to: to.path, from: from.path })
+  console.log('認証状態:', { 
+    isAuthenticated: authStore.isAuthenticated, 
+    isInitialized: authStore.isInitialized,
+    needsOnboarding: authStore.needsOnboarding 
+  })
+  
+  // 認証状態が初期化されていない場合は初期化を待つ
+  if (!authStore.isInitialized) {
+    console.log('認証状態を初期化中...')
+    await authStore.checkAuth()
   }
+  
+  // 認証が必要なページで未認証の場合
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    console.log('未認証のためログイン画面にリダイレクト')
+    next('/login')
+    return
+  }
+  
+  // ログイン済みでログインページにアクセスした場合
+  if (to.path === '/login' && authStore.isAuthenticated) {
+    console.log('ログイン済みのためリダイレクト')
+    // オンボーディングが必要かチェック
+    if (authStore.needsOnboarding) {
+      console.log('オンボーディングが必要なためオンボーディング画面にリダイレクト')
+      next('/onboarding')
+    } else {
+      console.log('オンボーディング完了済みのためホーム画面にリダイレクト')
+      next('/home')
+    }
+    return
+  }
+  
+  // 認証済みでオンボーディングが必要な場合
+  if (authStore.isAuthenticated && authStore.needsOnboarding && to.meta.requiresOnboarding === false) {
+    console.log('オンボーディングが必要なためオンボーディング画面にリダイレクト')
+    next('/onboarding')
+    return
+  }
+  
+  // オンボーディング完了済みでオンボーディングページにアクセスした場合
+  if (to.path === '/onboarding' && authStore.isAuthenticated && !authStore.needsOnboarding) {
+    console.log('オンボーディング完了済みのためホーム画面にリダイレクト')
+    next('/home')
+    return
+  }
+  
+  console.log('ナビゲーション許可:', to.path)
+  next()
 })
 
 export default router 

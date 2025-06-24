@@ -358,7 +358,13 @@ const handleRegister = async () => {
 // ホーム画面に移動
 const goToHome = () => {
   showSuccessMessage.value = false
-  router.push('/')
+  
+  // オンボーディングが必要かチェック
+  if (authStore.needsOnboarding) {
+    router.push('/onboarding')
+  } else {
+    router.push('/')
+  }
 }
 
 // コンポーネントマウント時
