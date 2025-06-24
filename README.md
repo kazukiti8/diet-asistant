@@ -121,12 +121,43 @@ window.$notify.info('タイトル', '情報メッセージ')
 
 ## 環境変数
 
-`.env` ファイルを作成して環境変数を設定できます：
+### .envファイルの設定
+
+1. プロジェクトルートに `.env` ファイルを作成
+2. 以下の内容をコピーして `.env` ファイルに貼り付け：
 
 ```env
-VITE_API_BASE_URL=http://localhost:8000/api
+# Firebase設定
+VITE_FIREBASE_API_KEY=your-api-key-here
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+VITE_FIREBASE_APP_ID=your-app-id
+VITE_FIREBASE_MEASUREMENT_ID=your-measurement-id
+
+# 本番環境用の設定（実際の値に置き換えてください）
+# VITE_FIREBASE_PROD_API_KEY=your-production-api-key
+# VITE_FIREBASE_PROD_AUTH_DOMAIN=your-production-auth-domain
+# VITE_FIREBASE_PROD_PROJECT_ID=your-production-project-id
+# VITE_FIREBASE_PROD_STORAGE_BUCKET=your-production-storage-bucket
+# VITE_FIREBASE_PROD_MESSAGING_SENDER_ID=your-production-sender-id
+# VITE_FIREBASE_PROD_APP_ID=your-production-app-id
+
+# アプリケーション設定
 VITE_APP_TITLE=ダイエット応援ノート
 ```
+
+3. Firebase Console から取得した実際の値を設定
+4. `.env` ファイルは `.gitignore` に含まれているため、Gitにコミットされません
+
+### Firebase設定の取得方法
+
+1. [Firebase Console](https://console.firebase.google.com/) にアクセス
+2. プロジェクトを作成または選択
+3. 「プロジェクトの設定」→「全般」タブ
+4. 「マイアプリ」セクションで「Webアプリを追加」
+5. 表示された設定情報を `.env` ファイルにコピー
 
 ## デプロイ
 

@@ -76,17 +76,6 @@
           </button>
         </form>
 
-        <!-- デモログイン -->
-        <div class="mt-4">
-          <button
-            @click="handleDemoLogin"
-            class="w-full btn-secondary py-3"
-            :disabled="loading"
-          >
-            デモログイン
-          </button>
-        </div>
-
         <!-- 登録リンク -->
         <div class="mt-6 text-center">
           <p class="text-gray-600">
@@ -142,30 +131,6 @@ const handleLogin = async () => {
   } catch (err) {
     error.value = 'ログイン中にエラーが発生しました'
     console.error('ログインエラー:', err)
-  } finally {
-    loading.value = false
-  }
-}
-
-const handleDemoLogin = async () => {
-  loading.value = true
-  error.value = ''
-
-  try {
-    const result = await authStore.login({
-      email: 'demo@example.com',
-      password: 'demo123'
-    })
-
-    if (result.success) {
-      window.$notify?.success('デモログイン成功', 'デモモードでログインしました')
-      router.push('/')
-    } else {
-      error.value = 'デモログインに失敗しました'
-    }
-  } catch (err) {
-    error.value = 'デモログイン中にエラーが発生しました'
-    console.error('デモログインエラー:', err)
   } finally {
     loading.value = false
   }
