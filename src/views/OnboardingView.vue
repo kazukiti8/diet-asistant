@@ -78,7 +78,7 @@
         </div>
         
         <div class="card">
-          <form @submit.prevent="nextStep" class="space-y-4">
+          <form class="space-y-4">
             <div>
               <label for="nickname" class="block text-sm font-medium text-gray-700 mb-2">
                 ニックネーム
@@ -180,7 +180,7 @@
             </div>
             
             <div class="flex space-x-3">
-              <button type="button" @click="prevStep" class="flex-1 btn-secondary">
+              <button type="button" @click="prevStep" class="flex-1 btn-secondary" :disabled="isCompleting">
                 戻る
               </button>
               <button type="submit" class="flex-1 btn-primary">
@@ -219,7 +219,7 @@
             </div>
           </div>
           
-          <form @submit.prevent="completeOnboarding" class="space-y-4">
+          <form class="space-y-4">
             <div>
               <label for="goalType" class="block text-sm font-medium text-gray-700 mb-2">
                 ダイエット目的
@@ -294,11 +294,16 @@
             </div>
             
             <div class="flex space-x-3">
-              <button type="button" @click="prevStep" class="flex-1 btn-secondary">
+              <button type="button" @click="prevStep" class="flex-1 btn-secondary" :disabled="isCompleting">
                 戻る
               </button>
-              <button type="submit" class="flex-1 btn-primary">
-                完了 <i class="fas fa-check ml-2"></i>
+              <button type="button" @click="handleComplete" class="flex-1 btn-primary" :disabled="isCompleting">
+                <span v-if="isCompleting">
+                  <i class="fas fa-spinner fa-spin mr-2"></i>処理中...
+                </span>
+                <span v-else>
+                  完了 <i class="fas fa-check ml-2"></i>
+                </span>
               </button>
             </div>
           </form>
@@ -321,6 +326,7 @@ const settingsStore = useSettingsStore()
 // ステップ管理
 const currentStep = ref(1)
 const totalSteps = 3
+const isCompleting = ref(false)
 
 const steps = computed(() => [
   { id: 'welcome', completed: currentStep.value > 1, description: 'ようこそ' },
@@ -464,9 +470,34 @@ const completeOnboarding = async () => {
     console.log('目標設定を保存中:', goalSettings)
     await settingsStore.updateSettings(goalSettings)
     
-    // オンボーディング完了
+    // オンボーディング完了フラグを設定
     console.log('オンボーディング完了フラグを設定中')
-    authStore.completeOnboarding()
+    await authStore.completeOnboarding()
+    
+    // 状態更新の確認
+    console.log('オンボーディング完了後の状態確認:')
+    console.log('- isFirstLogin:', authStore.isFirstLogin)
+    console.log('- needsOnboarding:', authStore.needsOnboarding)
+    
+    // 念のため、needsOnboardingを直接強制的に更新
+    if (authStore.needsOnboarding) {
+      console.log('needsOnboardingがまだtrueのため、強制的にfalseに設定')
+      authStore.needsOnboarding = false
+    }
+    
+    // 状態更新のため少し待機
+    await new Promise(resolve => setTimeout(resolve, 300))
+    
+    // 再度状態を確認
+    console.log('待機後の状態確認:')
+    console.log('- isFirstLogin:', authStore.isFirstLogin)
+    console.log('- needsOnboarding:', authStore.needsOnboarding)
+    
+    // 最終確認：needsOnboardingがfalseになっているかチェック
+    if (authStore.needsOnboarding) {
+      console.log('最終確認：needsOnboardingがまだtrueのため、再度falseに設定')
+      authStore.needsOnboarding = false
+    }
     
     // ホーム画面に遷移
     console.log('ホーム画面に遷移します')
@@ -482,7 +513,46 @@ const completeOnboarding = async () => {
     if (window.$notify) {
       window.$notify.error('エラー', '設定の保存に失敗しました')
     }
+  } finally {
+    isCompleting.value = false
   }
+}
+
+const handleComplete = () => {
+  // バリデーション
+  if (!goalsForm.goalType) {
+    if (window.$notify) {
+      window.$notify.error('エラー', 'ダイエット目的を選択してください')
+    }
+    return
+  }
+  
+  if ((goalsForm.goalType === 'weight_loss' || goalsForm.goalType === 'weight_gain') && !goalsForm.targetWeight) {
+    if (window.$notify) {
+      window.$notify.error('エラー', '目標体重を入力してください')
+    }
+    return
+  }
+  
+  if (!goalsForm.weeklyGoal) {
+    if (window.$notify) {
+      window.$notify.error('エラー', '週間目標を選択してください')
+    }
+    return
+  }
+  
+  if (!goalsForm.dailyCalories) {
+    if (window.$notify) {
+      window.$notify.error('エラー', '1日の目標カロリーを入力してください')
+    }
+    return
+  }
+  
+  // ローディング状態を開始
+  isCompleting.value = true
+  
+  // バリデーション通過後、オンボーディング完了処理を実行
+  completeOnboarding()
 }
 
 // 初期化

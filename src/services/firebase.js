@@ -474,15 +474,20 @@ export class AuthService {
   }
 
   static async logout() {
+    console.log('AuthService: logout開始')
     try {
       if (!auth) {
+        console.log('AuthService: Firebase認証が利用できません')
         throw new Error('Firebase認証が利用できません')
       }
       
+      console.log('AuthService: Firebase signOut開始')
       await signOut(auth)
+      console.log('AuthService: Firebase signOut完了')
       return { success: true }
     } catch (error) {
-      console.error('ログアウトエラー:', error)
+      console.error('AuthService: ログアウトエラー:', error)
+      console.error('AuthService: エラー詳細:', error.stack)
       return { success: false, error: error.message }
     }
   }

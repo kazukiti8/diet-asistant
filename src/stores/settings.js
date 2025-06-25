@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useWeightStore } from '@/stores/weight'
+import { useMealStore } from '@/stores/meal'
+import { useExerciseStore } from '@/stores/exercise'
 
 export const useSettingsStore = defineStore('settings', () => {
   // 状態
@@ -468,29 +473,95 @@ export const useSettingsStore = defineStore('settings', () => {
     }
   }
 
-  const clearAllSettings = () => {
-    userSettings.value = {
-      nickname: '',
-      age: null,
-      gender: null,
-      height: null,
-      activityLevel: 'moderate',
-      targetWeight: null,
-      targetDate: null,
-      weeklyWeightLoss: 0.5,
-      dailyCalorieGoal: 2000,
-      pfcGoals: { protein: 80, fat: 65, carbs: 250 },
-      notifications: { weight: true, meal: true, exercise: true, reminder: true, achievement: true },
-      reminders: {
-        weight: { enabled: true, time: '08:00', frequency: 'daily' },
-        meal: { enabled: true, time: '12:00', frequency: 'daily' },
-        exercise: { enabled: true, time: '18:00', frequency: 'daily' }
-      },
-      cheerCharacter: { type: 'friendly', frequency: 'normal', customMessages: [] },
-      dataSync: { enabled: false, autoBackup: true, backupFrequency: 'weekly' },
-      display: { theme: 'light', language: 'ja', units: 'metric' }
+  const clearAllSettings = async () => {
+    console.log('clearAllSettings: 処理開始')
+    
+    try {
+      // ステップ1: 基本設定のリセット
+      console.log('clearAllSettings: ステップ1 - 基本設定リセット開始')
+      try {
+        userSettings.value = {
+          nickname: '',
+          age: null,
+          gender: null,
+          height: null,
+          activityLevel: 'moderate',
+          targetWeight: null,
+          targetDate: null,
+          weeklyWeightLoss: 0.5,
+          dailyCalorieGoal: 2000,
+          pfcGoals: { protein: 80, fat: 65, carbs: 250 },
+          notifications: { weight: true, meal: true, exercise: true, reminder: true, achievement: true },
+          reminders: {
+            weight: { enabled: true, time: '08:00', frequency: 'daily' },
+            meal: { enabled: true, time: '12:00', frequency: 'daily' },
+            exercise: { enabled: true, time: '18:00', frequency: 'daily' }
+          },
+          cheerCharacter: { type: 'friendly', frequency: 'normal', customMessages: [] },
+          dataSync: { enabled: false, autoBackup: true, backupFrequency: 'weekly' },
+          display: { theme: 'light', language: 'ja', units: 'metric' }
+        }
+        console.log('clearAllSettings: ステップ1 - 基本設定リセット完了')
+      } catch (error) {
+        console.error('clearAllSettings: ステップ1エラー:', error)
+        throw error
+      }
+      
+      // ステップ2: ローカルストレージの削除
+      console.log('clearAllSettings: ステップ2 - ローカルストレージ削除開始')
+      try {
+        localStorage.removeItem(SETTINGS_KEY)
+        localStorage.removeItem('onboarding_completed')
+        localStorage.removeItem('backup_history')
+        console.log('clearAllSettings: ステップ2 - ローカルストレージ削除完了')
+      } catch (error) {
+        console.error('clearAllSettings: ステップ2エラー:', error)
+        throw error
+      }
+      
+      // ステップ3: 認証ストアの取得
+      console.log('clearAllSettings: ステップ3 - 認証ストア取得開始')
+      let authStore
+      try {
+        authStore = useAuthStore()
+        console.log('clearAllSettings: ステップ3 - 認証ストア取得完了')
+      } catch (error) {
+        console.error('clearAllSettings: ステップ3エラー:', error)
+        throw error
+      }
+      
+      // ステップ4: ログアウト処理
+      console.log('clearAllSettings: ステップ4 - ログアウト処理開始')
+      try {
+        await authStore.logout()
+        console.log('clearAllSettings: ステップ4 - ログアウト処理完了')
+      } catch (error) {
+        console.error('clearAllSettings: ステップ4エラー:', error)
+        throw error
+      }
+      
+      // ステップ5: 通知表示
+      console.log('clearAllSettings: ステップ5 - 通知表示開始')
+      try {
+        if (window.$notify) {
+          window.$notify.success('データ削除完了', '全てのデータを削除しました。ログイン画面に戻ります。')
+        }
+        console.log('clearAllSettings: ステップ5 - 通知表示完了')
+      } catch (error) {
+        console.error('clearAllSettings: ステップ5エラー:', error)
+        // 通知エラーは致命的ではないので続行
+      }
+      
+      console.log('clearAllSettings: 処理完了')
+      return { success: true }
+    } catch (error) {
+      console.error('clearAllSettings: 全体エラー:', error)
+      console.error('エラー詳細:', error.stack)
+      if (window.$notify) {
+        window.$notify.error('エラー', 'データの削除に失敗しました')
+      }
+      return { success: false, error: error.message }
     }
-    localStorage.removeItem(SETTINGS_KEY)
   }
 
   return {

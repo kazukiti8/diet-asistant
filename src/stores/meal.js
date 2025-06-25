@@ -364,12 +364,19 @@ export const useMealStore = defineStore('meal', () => {
   }
 
   const clearAllData = () => {
-    mealRecords.value = []
-    myMenus.value = []
-    templates.value = []
-    localStorage.removeItem(MEAL_RECORDS_KEY)
-    localStorage.removeItem(MY_MENUS_KEY)
-    localStorage.removeItem(TEMPLATES_KEY)
+    try {
+      console.log('meal.js: clearAllData開始')
+      mealRecords.value = []
+      myMenus.value = []
+      templates.value = []
+      localStorage.removeItem(MEAL_RECORDS_KEY)
+      localStorage.removeItem(MY_MENUS_KEY)
+      localStorage.removeItem(TEMPLATES_KEY)
+      console.log('meal.js: clearAllData完了')
+    } catch (error) {
+      console.error('meal.js: clearAllDataエラー:', error)
+      throw error
+    }
   }
 
   return {

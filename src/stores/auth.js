@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { AuthService, DatabaseService, auth } from '@/services/firebase'
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth'
 
@@ -12,23 +12,12 @@ export const useAuthStore = defineStore('auth', () => {
   const isMockMode = ref(false)
   const isFirstLogin = ref(false)
   const isInitialized = ref(false) // 初期化完了フラグ
+  const needsOnboarding = ref(false) // computedからrefに変更
 
   // ゲッター
   const isLoggedIn = computed(() => isAuthenticated.value && user.value !== null)
   const userProfile = computed(() => user.value)
   
-  // 初回ログイン判定
-  const needsOnboarding = computed(() => {
-    if (!isAuthenticated.value) return false
-    
-    // プロフィール設定と目標設定が完了しているかチェック
-    const settings = JSON.parse(localStorage.getItem('user_settings') || '{}')
-    const hasProfile = settings.nickname && settings.age && settings.gender && settings.height
-    const hasGoals = settings.targetWeight && settings.dailyCalorieGoal
-    
-    return !hasProfile || !hasGoals
-  })
-
   // モックユーザーデータ
   const mockUser = {
     uid: 'mock-user-id',
@@ -111,8 +100,10 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('user', JSON.stringify(user.value))
         localStorage.setItem('mockMode', 'true')
         
-        // 新規登録は初回ログイン
+        // 新規登録は必ず初回ログイン
         isFirstLogin.value = true
+        needsOnboarding.value = true
+        localStorage.removeItem('onboarding_completed') // 既存のフラグをクリア
         
         return { success: true }
       }
@@ -134,8 +125,10 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('user', JSON.stringify(result.user))
         localStorage.removeItem('mockMode')
         
-        // 新規登録は初回ログイン
+        // 新規登録は必ず初回ログイン
         isFirstLogin.value = true
+        needsOnboarding.value = true
+        localStorage.removeItem('onboarding_completed') // 既存のフラグをクリア
         
         return { success: true }
       } else {
@@ -150,24 +143,37 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const logout = async () => {
+    console.log('auth.js: logout開始')
     try {
+      console.log('auth.js: モックモードチェック', isMockMode.value)
       if (!isMockMode.value && auth) {
+        console.log('auth.js: Firebaseログアウト開始')
         await AuthService.logout()
+        console.log('auth.js: Firebaseログアウト完了')
       }
       
+      console.log('auth.js: 状態リセット開始')
       user.value = null
       token.value = null
       isAuthenticated.value = false
       isMockMode.value = false
       isFirstLogin.value = false
+      needsOnboarding.value = false
+      console.log('auth.js: 状態リセット完了')
       
+      console.log('auth.js: ローカルストレージ削除開始')
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       localStorage.removeItem('mockMode')
+      console.log('auth.js: ローカルストレージ削除完了')
+      // オンボーディング完了フラグは保持（ログアウトしても設定は維持）
+      // localStorage.removeItem('onboarding_completed')
       
+      console.log('auth.js: logout完了')
       return { success: true }
     } catch (error) {
-      console.error('ログアウトエラー:', error)
+      console.error('auth.js: ログアウトエラー:', error)
+      console.error('auth.js: エラー詳細:', error.stack)
       return { success: false, error: error.message }
     }
   }
@@ -235,6 +241,7 @@ export const useAuthStore = defineStore('auth', () => {
       isAuthenticated.value = false
       isMockMode.value = false
       isFirstLogin.value = false
+      needsOnboarding.value = false
       isInitialized.value = true
       
       return { success: false }
@@ -246,11 +253,14 @@ export const useAuthStore = defineStore('auth', () => {
       isAuthenticated.value = false
       isMockMode.value = false
       isFirstLogin.value = false
+      needsOnboarding.value = false
       isInitialized.value = true
       
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       localStorage.removeItem('mockMode')
+      // オンボーディング完了フラグは保持
+      // localStorage.removeItem('onboarding_completed')
       
       return { success: false, error: error.message }
     }
@@ -258,20 +268,54 @@ export const useAuthStore = defineStore('auth', () => {
 
   // 初回ログイン判定
   const checkFirstLogin = () => {
-    const settings = JSON.parse(localStorage.getItem('user_settings') || '{}')
-    const hasProfile = settings.nickname && settings.age && settings.gender && settings.height
-    const hasGoals = settings.targetWeight && settings.dailyCalorieGoal
+    console.log('初回ログイン判定を開始')
     
-    isFirstLogin.value = !hasProfile || !hasGoals
+    // オンボーディング完了フラグをチェック
+    const onboardingCompleted = localStorage.getItem('onboarding_completed') === 'true'
+    console.log('オンボーディング完了フラグ:', onboardingCompleted)
+    
+    if (onboardingCompleted) {
+      isFirstLogin.value = false
+      needsOnboarding.value = false
+      console.log('オンボーディング完了済みのため初回ログインではありません')
+      return
+    }
+    
+    // オンボーディング完了フラグがない場合は初回ログイン
+    isFirstLogin.value = true
+    needsOnboarding.value = true
+    console.log('初回ログイン判定結果:', isFirstLogin.value)
   }
 
   // オンボーディング完了
-  const completeOnboarding = () => {
+  const completeOnboarding = async () => {
     console.log('認証ストア: オンボーディング完了処理を開始')
     console.log('現在のisFirstLogin:', isFirstLogin.value)
+    console.log('現在のneedsOnboarding:', needsOnboarding.value)
+    
+    // オンボーディング完了フラグをローカルストレージに保存
+    localStorage.setItem('onboarding_completed', 'true')
+    
+    // isFirstLoginとneedsOnboardingをfalseに設定
     isFirstLogin.value = false
+    needsOnboarding.value = false
+    
+    // Vueの反応性システムが更新されるまで待機
+    await nextTick()
+    
     console.log('isFirstLoginをfalseに設定しました')
-    console.log('needsOnboardingの値:', needsOnboarding.value)
+    console.log('needsOnboardingをfalseに設定しました')
+    console.log('オンボーディング完了フラグをローカルストレージに保存しました')
+    console.log('更新後のisFirstLogin:', isFirstLogin.value)
+    console.log('更新後のneedsOnboarding:', needsOnboarding.value)
+    
+    // 念のため、再度確認して設定
+    if (needsOnboarding.value) {
+      console.log('needsOnboardingがまだtrueのため、再度falseに設定')
+      needsOnboarding.value = false
+      await nextTick()
+      console.log('再設定後のneedsOnboarding:', needsOnboarding.value)
+    }
   }
 
   const updateProfile = async (profileData) => {
@@ -337,11 +381,11 @@ export const useAuthStore = defineStore('auth', () => {
     isMockMode,
     isFirstLogin,
     isInitialized,
+    needsOnboarding,
     
     // ゲッター
     isLoggedIn,
     userProfile,
-    needsOnboarding,
     
     // アクション
     login,

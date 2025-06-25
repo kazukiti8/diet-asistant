@@ -209,6 +209,26 @@
           </div>
         </div>
       </section>
+
+      <!-- Data Management -->
+      <section class="mb-8">
+        <div class="card">
+          <h2 class="text-xl font-bold mb-4">データ管理</h2>
+          
+          <div class="space-y-4">
+            <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+              <h3 class="font-semibold text-red-800 mb-2">危険な操作</h3>
+              <p class="text-sm text-red-700 mb-4">
+                以下の操作は全てのデータを削除し、ログイン画面に戻ります。この操作は取り消せません。
+              </p>
+              
+              <button @click="showDeleteAllDataModal" class="w-full btn-danger">
+                <i class="fas fa-trash mr-2"></i>全てのデータを削除
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Bottom Navigation -->
@@ -327,6 +347,46 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete All Data Modal -->
+    <div v-if="showDeleteAllDataModal" class="modal-overlay" @click="showDeleteAllDataModal = false">
+      <div class="modal-content" @click.stop>
+        <div class="p-4 border-b border-red-200 bg-red-50">
+          <h3 class="text-lg font-semibold text-red-800">
+            <i class="fas fa-exclamation-triangle mr-2"></i>全てのデータを削除
+          </h3>
+        </div>
+        <div class="p-4">
+          <div class="mb-4">
+            <p class="text-gray-700 mb-2">以下のデータが全て削除されます：</p>
+            <ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
+              <li>プロフィール設定</li>
+              <li>目標設定</li>
+              <li>体重記録（{{ dataSummary.weightRecords }}件）</li>
+              <li>食事記録（{{ dataSummary.mealRecords }}件）</li>
+              <li>運動記録（{{ dataSummary.exerciseRecords }}件）</li>
+              <li>バックアップ履歴</li>
+              <li>その他の設定データ</li>
+            </ul>
+          </div>
+          
+          <div class="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+            <p class="text-sm text-red-700">
+              <strong>注意：</strong>この操作は取り消せません。削除後はログイン画面に戻ります。
+            </p>
+          </div>
+          
+          <div class="flex space-x-3">
+            <button @click="showDeleteAllDataModal = false" class="flex-1 btn-secondary">
+              キャンセル
+            </button>
+            <button @click="deleteAllData" class="flex-1 btn-danger">
+              <i class="fas fa-trash mr-2"></i>削除実行
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -350,6 +410,7 @@ const isLoading = ref(false)
 const showImportModal = ref(false)
 const showPreviewModal = ref(false)
 const showConfirmModal = ref(false)
+const showDeleteAllDataModal = ref(false)
 const confirmModalTitle = ref('')
 const confirmModalMessage = ref('')
 const confirmAction = ref(null)
@@ -632,6 +693,30 @@ const loadBackupHistory = async () => {
 
 const refreshBackups = async () => {
   await loadBackupHistory()
+}
+
+const deleteAllData = async () => {
+  try {
+    isLoading.value = true
+    
+    // 設定ストアのclearAllSettingsメソッドを使用して全てのデータを削除
+    const result = await settingsStore.clearAllSettings()
+    
+    // モーダルを閉じる
+    showDeleteAllDataModal.value = false
+    
+    if (result.success) {
+      // ログイン画面に遷移
+      await router.push('/login')
+    } else {
+      alert('データ削除に失敗しました: ' + (result.error || '不明なエラー'))
+    }
+  } catch (error) {
+    console.error('データ削除エラー:', error)
+    alert('データの削除に失敗しました')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // Lifecycle

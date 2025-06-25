@@ -56,6 +56,11 @@
               </p>
             </div>
           </div>
+          <div class="mt-6 flex justify-end">
+            <button @click="logout" class="btn-danger">
+              <i class="fas fa-sign-out-alt mr-2"></i>ログアウト
+            </button>
+          </div>
         </div>
       </section>
 
@@ -396,10 +401,19 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
+import { useAuthStore } from '@/stores/auth'
 import BottomNavigation from '@/components/BottomNavigation.vue'
 
+console.log('SettingsView: スクリプト初期化開始')
+
 const router = useRouter()
+console.log('SettingsView: router取得完了')
+
 const settingsStore = useSettingsStore()
+console.log('SettingsView: settingsStore取得完了', settingsStore)
+
+const authStore = useAuthStore()
+console.log('SettingsView: authStore取得完了', authStore)
 
 // Reactive data
 const isLoading = ref(false)
@@ -410,8 +424,13 @@ const confirmModalMessage = ref('')
 const confirmAction = ref(null)
 const importError = ref('')
 
+console.log('SettingsView: リアクティブデータ初期化完了')
+
 // Computed properties
-const userSettings = computed(() => settingsStore.userSettings)
+const userSettings = computed(() => {
+  console.log('SettingsView: userSettings computed実行')
+  return settingsStore.userSettings
+})
 
 const userInitials = computed(() => {
   const nickname = userSettings.value.nickname || 'ユーザー'
@@ -452,6 +471,8 @@ const dataSize = computed(() => {
   const sizeInKB = Math.round(sizeInBytes / 1024 * 100) / 100
   return `${sizeInKB} KB`
 })
+
+console.log('SettingsView: computed properties初期化完了')
 
 // Methods
 const updateCheerCharacter = async () => {
@@ -553,28 +574,64 @@ const resetToDefaults = () => {
 }
 
 const clearAllData = () => {
+  console.log('SettingsView: clearAllData開始')
+  console.log('SettingsView: settingsStore確認', settingsStore)
+  console.log('SettingsView: settingsStore.clearAllSettings確認', settingsStore.clearAllSettings)
+  
   confirmModalTitle.value = 'すべてのデータを削除'
   confirmModalMessage.value = '記録、設定などすべてのデータを削除します。この操作は取り消せません。'
   confirmAction.value = async () => {
+    console.log('SettingsView: confirmAction開始')
     try {
-      settingsStore.clearAllSettings()
+      console.log('SettingsView: settingsStore.clearAllSettings呼び出し前')
+      console.log('SettingsView: settingsStore状態', settingsStore)
+      const result = await settingsStore.clearAllSettings()
+      console.log('SettingsView: settingsStore.clearAllSettings呼び出し後', result)
       showConfirmModal.value = false
-      alert('すべてのデータを削除しました')
-      router.push('/login')
+      
+      if (result.success) {
+        console.log('SettingsView: ログイン画面への遷移開始')
+        // ログイン画面に遷移
+        await router.push('/login')
+        console.log('SettingsView: ログイン画面への遷移完了')
+      } else {
+        console.error('SettingsView: データ削除失敗', result.error)
+        alert('データ削除に失敗しました: ' + (result.error || '不明なエラー'))
+      }
     } catch (error) {
-      console.error('データ削除エラー:', error)
+      console.error('SettingsView: データ削除エラー:', error)
+      console.error('SettingsView: エラー詳細:', error.stack)
       alert('削除に失敗しました')
     }
   }
   showConfirmModal.value = true
+  console.log('SettingsView: clearAllData完了')
+}
+
+const logout = async () => {
+  try {
+    const result = await authStore.logout()
+    if (result.success) {
+      await router.push('/login')
+    } else {
+      alert('ログアウトに失敗しました: ' + (result.error || '不明なエラー'))
+    }
+  } catch (error) {
+    alert('ログアウトに失敗しました')
+    console.error('ログアウトエラー:', error)
+  }
 }
 
 // Lifecycle
 onMounted(async () => {
+  console.log('SettingsView: onMounted開始')
   isLoading.value = true
   await settingsStore.loadSettings()
   isLoading.value = false
+  console.log('SettingsView: onMounted完了')
 })
+
+console.log('SettingsView: スクリプト初期化完了')
 </script>
 
 <style scoped>

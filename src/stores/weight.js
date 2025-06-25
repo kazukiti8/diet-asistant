@@ -219,8 +219,15 @@ export const useWeightStore = defineStore('weight', () => {
   }
 
   const clearAllData = () => {
-    weightRecords.value = []
-    localStorage.removeItem(STORAGE_KEY)
+    try {
+      console.log('weight.js: clearAllData開始')
+      weightRecords.value = []
+      localStorage.removeItem(STORAGE_KEY)
+      console.log('weight.js: clearAllData完了')
+    } catch (error) {
+      console.error('weight.js: clearAllDataエラー:', error)
+      throw error
+    }
   }
 
   return {

@@ -420,12 +420,19 @@ export const useExerciseStore = defineStore('exercise', () => {
   }
 
   const clearAllData = () => {
-    exerciseRecords.value = []
-    favoriteMenus.value = []
-    exerciseMenus.value = []
-    localStorage.removeItem(EXERCISE_RECORDS_KEY)
-    localStorage.removeItem(FAVORITE_MENUS_KEY)
-    localStorage.removeItem(EXERCISE_MENUS_KEY)
+    try {
+      console.log('exercise.js: clearAllData開始')
+      exerciseRecords.value = []
+      favoriteMenus.value = []
+      exerciseMenus.value = []
+      localStorage.removeItem(EXERCISE_RECORDS_KEY)
+      localStorage.removeItem(FAVORITE_MENUS_KEY)
+      localStorage.removeItem(EXERCISE_MENUS_KEY)
+      console.log('exercise.js: clearAllData完了')
+    } catch (error) {
+      console.error('exercise.js: clearAllDataエラー:', error)
+      throw error
+    }
   }
 
   return {

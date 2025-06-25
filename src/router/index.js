@@ -142,7 +142,8 @@ router.beforeEach(async (to, from, next) => {
   console.log('認証状態:', { 
     isAuthenticated: authStore.isAuthenticated, 
     isInitialized: authStore.isInitialized,
-    needsOnboarding: authStore.needsOnboarding 
+    needsOnboarding: authStore.needsOnboarding,
+    isFirstLogin: authStore.isFirstLogin
   })
   
   // 認証状態が初期化されていない場合は初期化を待つ
@@ -184,6 +185,26 @@ router.beforeEach(async (to, from, next) => {
     console.log('オンボーディング完了済みのためホーム画面にリダイレクト')
     next('/home')
     return
+  }
+  
+  // 初回ログイン時は必ずオンボーディング画面にリダイレクト
+  if (authStore.isAuthenticated && authStore.isFirstLogin && to.path !== '/onboarding') {
+    console.log('初回ログインのためオンボーディング画面にリダイレクト')
+    next('/onboarding')
+    return
+  }
+  
+  // オンボーディング完了後はホーム画面に遷移を許可
+  if (authStore.isAuthenticated && !authStore.isFirstLogin && to.path === '/onboarding') {
+    console.log('オンボーディング完了済みのためホーム画面にリダイレクト')
+    next('/home')
+    return
+  }
+  
+  // needsOnboardingとisFirstLoginの整合性をチェック
+  if (authStore.isAuthenticated && authStore.isFirstLogin !== authStore.needsOnboarding) {
+    console.log('状態の不整合を検出: isFirstLogin =', authStore.isFirstLogin, ', needsOnboarding =', authStore.needsOnboarding)
+    console.log('isFirstLoginの値に基づいて処理を継続')
   }
   
   console.log('ナビゲーション許可:', to.path)
